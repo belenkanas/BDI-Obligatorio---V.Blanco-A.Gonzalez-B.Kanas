@@ -1,6 +1,8 @@
 DROP DATABASE IF EXISTS `obligatorio`;
 CREATE DATABASE `obligatorio` DEFAULT CHARACTER SET utf8 COLLATE utf8_spanish_ci;
 
+use obligatorio;
+
 CREATE TABLE login(
   correo VARCHAR(255) UNIQUE NOT NULL,
   contraseña VARCHAR(255) NOT NULL,
@@ -13,6 +15,13 @@ CREATE TABLE participante(
   apellido VARCHAR(50) NOT NULL,
   email VARCHAR(255) NOT NULL,
   PRIMARY KEY (ci)
+);
+
+
+CREATE TABLE facultad(
+    id_facultad INT NOT NULL,
+    nombre VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id_facultad)
 );
 
 CREATE TABLE programa_academico(
@@ -33,11 +42,13 @@ CREATE TABLE participante_programa_academico(
   FOREIGN KEY (nombre_programa) REFERENCES programa_academico(nombre_programa)
 );
 
-CREATE TABLE facultad(
-    id_facultad INT NOT NULL,
-    nombre VARCHAR(255) NOT NULL,
-    PRIMARY KEY (id_facultad)
+CREATE TABLE edificio(
+    nombre_edificio VARCHAR(255) NOT NULL,
+    direccion VARCHAR(255) NOT NULL,
+    departamento VARCHAR(255),
+    PRIMARY KEY (nombre_edificio)
 );
+
 
 CREATE TABLE sala(
     nombre_sala VARCHAR(255) NOT NULL,
@@ -48,12 +59,6 @@ CREATE TABLE sala(
     FOREIGN KEY (edificio) REFERENCES edificio(nombre_edificio)
 );
 
-CREATE TABLE edificio(
-    nombre_edificio VARCHAR(255) NOT NULL,
-    direccion VARCHAR(255) NOT NULL,
-    departamento VARCHAR(255),
-    PRIMARY KEY (nombre_edificio)
-);
 
 CREATE TABLE turno(
   id_turno INT NOT NULL,
