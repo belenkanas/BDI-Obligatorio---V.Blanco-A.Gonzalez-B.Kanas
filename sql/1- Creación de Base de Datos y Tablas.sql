@@ -4,7 +4,7 @@ CREATE DATABASE `obligatorio` DEFAULT CHARACTER SET utf8 COLLATE utf8_spanish_ci
 use obligatorio;
 
 CREATE TABLE login(
-  correo VARCHAR(255) UNIQUE NOT NULL,
+  correo VARCHAR(255) NOT NULL,
   contraseña VARCHAR(255) NOT NULL,
   PRIMARY KEY (correo)
 );
@@ -14,12 +14,13 @@ CREATE TABLE participante(
   nombre VARCHAR(50) NOT NULL,
   apellido VARCHAR(50) NOT NULL,
   email VARCHAR(255) NOT NULL,
-  PRIMARY KEY (ci)
+  PRIMARY KEY (ci),
+  FOREIGN KEY (email) REFERENCES login(correo)
 );
 
 
 CREATE TABLE facultad(
-    id_facultad INT NOT NULL,
+    id_facultad INT AUTO_INCREMENT,
     nombre VARCHAR(255) NOT NULL,
     PRIMARY KEY (id_facultad)
 );
@@ -33,7 +34,7 @@ CREATE TABLE programa_academico(
 );
 
 CREATE TABLE participante_programa_academico(
-  id_alumno_programa INT NOT NULL,
+  id_alumno_programa INT AUTO_INCREMENT,
   ci_participante VARCHAR(8) NOT NULL,
   nombre_programa VARCHAR(100) NOT NULL,
   rol ENUM('alumno', 'docente') NOT NULL,
@@ -61,14 +62,14 @@ CREATE TABLE sala(
 
 
 CREATE TABLE turno(
-  id_turno INT NOT NULL,
+  id_turno INT AUTO_INCREMENT,
   hora_inicio TIME NOT NULL,
   hora_fin TIME NOT NULL,
   PRIMARY KEY (id_turno)
 );
 
 CREATE TABLE reserva(
-  id_reserva INT NOT NULL,
+  id_reserva INT AUTO_INCREMENT,
   nombre_sala VARCHAR(255) NOT NULL,
   edificio VARCHAR(255) NOT NULL,
   fecha DATETIME NOT NULL,
