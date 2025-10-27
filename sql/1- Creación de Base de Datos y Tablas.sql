@@ -57,8 +57,8 @@ CREATE TABLE edificio(
 
 CREATE TABLE turno(
   id_turno INT NOT NULL,
-  hora_inicio DATETIME NOT NULL,
-  hora_fin DATETIME NOT NULL,
+  hora_inicio TIME NOT NULL,
+  hora_fin TIME NOT NULL,
   PRIMARY KEY (id_turno)
 );
 
