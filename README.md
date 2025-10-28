@@ -11,6 +11,15 @@ El sistema permite la **reserva**, **control de asistencia** y **generación de 
 
 ---
 
+## ⚙️ Inicio de aplicación
+
+Para poder correr la aplicación (en conjunto con la base de datos):
+
+➡️Correr el dockercompose
+
+
+---
+
 ## 🏫 Descripción General
 
 Las *Salas de Estudio* son espacios utilizados por estudiantes y docentes para diversas actividades:  
