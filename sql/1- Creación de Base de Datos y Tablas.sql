@@ -36,7 +36,7 @@ CREATE TABLE programa_academico(
 CREATE TABLE participante_programa_academico(
   id_alumno_programa INT AUTO_INCREMENT,
   ci_participante VARCHAR(8) NOT NULL,
-  nombre_programa VARCHAR(100) NOT NULL,
+  nombre_programa VARCHAR(50) NOT NULL,
   rol ENUM('alumno', 'docente') NOT NULL,
   PRIMARY KEY (id_alumno_programa),
   FOREIGN KEY (ci_participante) REFERENCES participante(ci),
