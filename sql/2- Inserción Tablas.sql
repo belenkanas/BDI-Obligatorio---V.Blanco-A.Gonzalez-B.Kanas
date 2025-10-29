@@ -101,7 +101,8 @@ INSERT INTO obligatorio.turno (hora_inicio, hora_fin) VALUES
 ('18:00:00', '19:00:00'),
 ('19:00:00', '20:00:00'),
 ('20:00:00', '21:00:00'),
-('21:00:00', '22:00:00');
+('21:00:00', '22:00:00'),
+('22:00:00', '23:00:00');
 
 /*Reservas*/
 INSERT INTO obligatorio.reserva (nombre_sala, edificio, fecha, id_turno, estado)
