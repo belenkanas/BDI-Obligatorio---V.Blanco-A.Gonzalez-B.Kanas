@@ -64,3 +64,29 @@ SELECT ((SELECT COUNT(*)
         ((SELECT COUNT(*)
           FROM obligatorio.reserva r
           WHERE r.estado = 'cancelada' OR r.estado = 'sin asistencia') / (SELECT COUNT(*) FROM obligatorio.reserva) * 100) AS porcentaje_canceladas;
+
+/*     Agregadas    */
+
+/*    salas sin ninguna reserva   */
+SELECT s.nombre_sala, s.edificio
+FROM obligatorio.sala s
+LEFT JOIN obligatorio.reserva r ON r.nombre_sala= s.nombre_sala
+WHERE r.id_reserva IS NULL
+ORDER BY s.edificio, s.nombre_sala;
+
+/*    Participantes que más cancelan  (se podrían aplicar sanciones más severas) */
+SELECT rp.ci_participante, COUNT(*) AS reservas_totales, SUM(r.estado IN ('cancelada','sin asistencia')) AS no_efectivas, ROUND(100 * SUM(r.estado IN ('cancelada','sin asistencia')) / COUNT(*), 1) AS cuanta_cancelacion
+FROM obligatorio.reserva r
+JOIN obligatorio.reserva_participante rp ON rp.id_reserva = r.id_reserva
+GROUP BY rp.ci_participante
+HAVING COUNT(*) >= 3
+ORDER BY cuanta_cancelacion_ DESC, reservas_totales DESC;
+
+/*    Programas que más usan los edificios   */
+SELECT pa.nombre_programa, COUNT(DISTINCT r.edificio) AS edificios_usados
+FROM obligatorio.reserva r
+JOIN obligatorio.reserva_participante rp ON rp.id_reserva = r.id_reserva
+JOIN obligatorio.participante_programa_academico ppa ON ppa.ci_participante = rp.ci_participante
+JOIN obligatorio.programa_academico pa ON pa.nombre_programa = ppa.nombre_programa
+GROUP BY pa.nombre_programa
+ORDER BY edificios_usados DESC, pa.nombre_programa;
