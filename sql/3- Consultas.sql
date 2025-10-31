@@ -80,7 +80,7 @@ FROM obligatorio.reserva r
 JOIN obligatorio.reserva_participante rp ON rp.id_reserva = r.id_reserva
 GROUP BY rp.ci_participante
 HAVING COUNT(*) >= 3
-ORDER BY cuanta_cancelacion_ DESC, reservas_totales DESC;
+ORDER BY cuanta_cancelacion DESC, reservas_totales DESC;
 
 /*    Programas que más usan los edificios   */
 SELECT pa.nombre_programa, COUNT(DISTINCT r.edificio) AS edificios_usados

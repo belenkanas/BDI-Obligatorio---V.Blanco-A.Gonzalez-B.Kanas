@@ -26,10 +26,11 @@ CREATE TABLE facultad(
 );
 
 CREATE TABLE programa_academico(
+  id_programa INT AUTO_INCREMENT,
   nombre_programa VARCHAR(50) NOT NULL,
   id_facultad INT NOT NULL,
   tipo ENUM('grado', 'postgrado') NOT NULL,
-  PRIMARY KEY (nombre_programa),
+  PRIMARY KEY (id_programa),
   FOREIGN KEY (id_facultad) REFERENCES facultad(id_facultad)
 );
 
