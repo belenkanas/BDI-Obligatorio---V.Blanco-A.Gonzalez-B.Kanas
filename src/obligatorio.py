@@ -20,16 +20,6 @@ def listar_participantes():
   cursor.close()
   cnx.close()
 
-def menu():
-    while True:
-        print("\nSeleccione una opción:")
-        print("1. Listar Participantes")
-        opcion = input("Ingrese el número de la opción deseada: ")
-        if opcion == '1':
-            listar_participantes()
-        else:
-                print("Opción inválida, intenta de nuevo.")
-
 def salasMasReservadas():
     cnx=conexion()
     cursor=cnx.cursor()
@@ -39,10 +29,11 @@ def salasMasReservadas():
                 GROUP BY r.nombre_sala
                 ORDER BY masReservada DESC""")
     cursor.execute(query)
-    resultado = cursor.fetchall()
-    print("\n--- Sala con más reservas---")
-    nombre_sala, masReservada = resultado
-    print(f"{nombre_sala} con {masReservada}")
+    resultados = cursor.fetchall()
+    print("\n--- Salas con más reservas ---")
+    for nombre_sala, masReservada in resultados:
+        print(f"{nombre_sala}: {masReservada} reservas")
+
 
     cursor.close()
     cnx.close()
@@ -57,11 +48,12 @@ def turnosMasDemandados():
                 ORDER BY masDemandados DESC""")
     
     cursor.execute(query)
-    resultado = cursor.fetchone()
+    resultado = cursor.fetchall()
 
     print("\n--- Turnos más demandados ---")
-    hora_inicio, hora_fin, masDemandados = resultado
-    print(f"{hora_inicio}/{hora_fin} con {masDemandados}")
+    for id_turno, hora_inicio, hora_fin, masDemandados in resultado:
+        print(f"Turno {id_turno}: {hora_inicio} - {hora_fin} → {masDemandados} reservas")
+
 
     cursor.close()
     cnx.close()
@@ -79,11 +71,14 @@ def promedioParticipantesPorSala():
                 ORDER BY promedio DESC""")
     
     cursor.execute(query)
-    resultado = cursor.fetchall()
+    resultados = cursor.fetchall()
 
     print("\n--- Promedio de participantes por sala ---")
-    nombre_sala, promedio = resultado
-    print(f"{nombre_sala}: {promedio} personas")
+    if resultados:
+        for nombre_sala, promedio in resultados:
+            print(f"{nombre_sala}: {promedio:.2f} personas")
+    else:
+        print("No hay datos disponibles.")
 
     cursor.close()
     cnx.close()
@@ -102,11 +97,14 @@ def cantReservasPorCarreraYFacultad():
                 ORDER BY cantidad_reservas DESC""")
     
     cursor.execute(query)
-    resultado = cursor.fetchall()
+    resultados = cursor.fetchall()
 
     print("\n--- Cantidad de reservas por carrera y facultad ---")
-    nombre, nombre_programa, cantidad_reservas = resultado
-    print(f"{nombre}, {nombre_programa}: {cantidad_reservas}")
+    if resultados:
+        for nombre_facultad, nombre_programa, cantidad_reservas in resultados:
+            print(f"{nombre_facultad} - {nombre_programa}: {cantidad_reservas} reservas")
+    else:
+        print("No hay datos disponibles.")
 
     cursor.close()
     cnx.close()
@@ -125,11 +123,14 @@ def porcentajeOcupacionSalaPorEdificio():
                 ORDER BY porcentaje DESC""")
     
     cursor.execute(query)
-    resultado = cursor.fetchall()
+    resultados = cursor.fetchall()
 
     print("\n--- Porcentaje de ocupación de salas por edificio ---")
-    edificio, porcentaje = resultado
-    print(f"{edificio}: %{porcentaje:.1f}")
+    if resultados:
+        for edificio, porcentaje in resultados:
+            print(f"{edificio}: {porcentaje:.1f}%")
+    else:
+        print("No hay datos disponibles.")
 
     cursor.close()
     cnx.close()
@@ -146,12 +147,14 @@ def cantidadReservasAsistencias():
                 ORDER BY ppa.rol, pa.tipo""")
     
     cursor.execute(query)
-    resultado = cursor.fetchall()
+    resultados = cursor.fetchall()
 
     print("\n--- Cantidad de reservas y asistencias de profesores y alumnos (grado y posgrado) ---")
-    rol, tipo, reservas, asistencias= resultado
-    print(f"{rol}, {tipo}: {reservas} reservas, {asistencias} asistencias")
-
+    if resultados:
+        for rol, tipo, reservas, asistencias in resultados:
+            print(f"{rol}, {tipo}: {reservas} reservas, {asistencias} asistencias")
+    else:
+        print("No hay datos disponibles.")
     cursor.close()
     cnx.close()
 
@@ -167,11 +170,14 @@ def cantidadSanciones():
                 ORDER BY ppa.rol, pa.tipo""")
     
     cursor.execute(query)
-    resultado = cursor.fetchall()
+    resultados = cursor.fetchall()
 
     print("\n--- Cantidad de sanciones para profesores y alumnos (grado y posgrado) ---")
-    rol, tipo, reservas, sanciones= resultado
-    print(f"{rol}, {tipo}: {sanciones} sanciones")
+    if resultados:
+        for rol, tipo, sanciones in resultados:
+            print(f"{rol}, {tipo}: {sanciones} sanciones")
+    else:
+        print("No hay datos disponibles.")
 
     cursor.close()
     cnx.close()
@@ -188,12 +194,14 @@ def porcentajeReservasUsadasCanceladas():
                 WHERE r.estado = 'cancelada' OR r.estado = 'sin asistencia') / (SELECT COUNT(*) FROM obligatorio.reserva) * 100) AS porcentaje_canceladas""")
     
     cursor.execute(query)
-    resultado = cursor.fetchall()
+    resultado = cursor.fetchone()
 
     print("\n--- Porcentaje de reservas efectivamente utilizadas vs. canceladas/no asistidas ---")
-    porcentaje_utilizadas, porcentaje_canceladas = resultado
-    print(f"Utilizadas:{porcentaje_utilizadas:.1f}% Canceladas:{porcentaje_canceladas:.1f}")
-
+    if resultado:
+        porcentaje_utilizadas, porcentaje_canceladas = resultado
+        print(f"Utilizadas: {porcentaje_utilizadas:.1f}% | Canceladas: {porcentaje_canceladas:.1f}%")
+    else:
+        print("No hay datos disponibles.")
     cursor.close()
     cnx.close()
 
@@ -208,11 +216,14 @@ def salaSinReserva():
                 ORDER BY s.edificio, s.nombre_sala""")
     
     cursor.execute(query)
-    resultado = cursor.fetchall()
+    resultados = cursor.fetchall()
 
     print("\n--- Salas sin reservas hechas ---")
-    nombre_sala, edificio = resultado
-    print(f"{nombre_sala}, {edificio}")
+    if resultados:
+        for nombre_sala, edificio in resultados:
+            print(f"{nombre_sala} ({edificio})")
+    else:
+        print("Todas las salas tienen al menos una reserva.")
 
     cursor.close()
     cnx.close()
@@ -229,11 +240,14 @@ def participantesQueMasCancelan():
               ORDER BY cuanta_cancelacion DESC, reservas_totales DESC""")
     
     cursor.execute(query)
-    resultado = cursor.fetchall()
+    resultados = cursor.fetchall()
 
-    print("\n--- Participantes que mas cancelan ---")
-    ci_participante, cuanta_cancelacion = resultado
-    print(f"{ci_participante} tasa de cancelación: {cuanta_cancelacion}")
+    print("\n--- Participantes que más cancelan ---")
+    if resultados:
+        for ci_participante, reservas_totales, no_efectivas, cuanta_cancelacion in resultados:
+            print(f"{ci_participante}: {cuanta_cancelacion}% de cancelaciones ({no_efectivas}/{reservas_totales})")
+    else:
+        print("No hay participantes con suficientes reservas para analizar.")
 
     cursor.close()
     cnx.close()
@@ -251,14 +265,60 @@ def programasMasUsanEdificios():
                 ORDER BY edificios_usados DESC, pa.nombre_programa""")
     
     cursor.execute(query)
-    resultado = cursor.fetchall()
+    resultados = cursor.fetchall()
 
     print("\n--- Programas que más usan los edificios ---")
-    nombre_programa, edificios_usados = resultado
-    print(f"{nombre_programa}: {edificios_usados} edificios usados")
+    if resultados:
+        for nombre_programa, edificios_usados in resultados:
+            print(f"{nombre_programa}: {edificios_usados} edificios usados")
+    else:
+        print("No hay datos disponibles.")
 
     cursor.close()
     cnx.close()
+
+def menu():
+    while True:
+        print("\nSeleccione una opción:")
+        print("1. Listar Participantes")
+        print("2. Salas más reservadas")
+        print("3. Turnos más demandados")   
+        print("4. Promedio de participantes por sala")
+        print("5. Cantidad de reservas por carrera y facultad")
+        print("6. Porcentaje de ocupación de sala por edificio")
+        print("7. Cantidad de reservas y asistencias de profesores y alumnos (grado y posgrado)")
+        print("8. Cantidad de sanciones para profesores y alumnos (grado y posgrado)")
+        print("9. Porcentaje de reservas efectivamente utilizadas vs. canceladas/no asistidas")
+        print("10. Salas sin reservas hechas")
+        print("11. Participantes que más cancelan")
+        print("12. Programas que más usan los edificios")
+        opcion = input("Ingrese el número de la opción deseada: ")
+        if opcion == '1':
+            listar_participantes()
+        elif opcion == '2':
+            salasMasReservadas()
+        elif opcion == '3':
+            turnosMasDemandados()
+        elif opcion == '4':
+            promedioParticipantesPorSala()
+        elif opcion == '5':
+            cantReservasPorCarreraYFacultad()
+        elif opcion == '6':
+            porcentajeOcupacionSalaPorEdificio()
+        elif opcion == '7':
+            cantidadReservasAsistencias()
+        elif opcion == '8':
+            cantidadSanciones()
+        elif opcion == '9':
+            porcentajeReservasUsadasCanceladas()
+        elif opcion == '10':
+            salaSinReserva()
+        elif opcion == '11':
+            participantesQueMasCancelan()
+        elif opcion == '12':
+            programasMasUsanEdificios()
+        else:
+                print("Opción inválida, intenta de nuevo.")
 
 
 if __name__ == "__main__":
