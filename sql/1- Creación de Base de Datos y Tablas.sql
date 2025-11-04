@@ -37,28 +37,30 @@ CREATE TABLE programa_academico(
 CREATE TABLE participante_programa_academico(
   id_alumno_programa INT AUTO_INCREMENT,
   ci_participante VARCHAR(8) NOT NULL,
-  nombre_programa VARCHAR(50) NOT NULL,
+  id_programa INT NOT NULL,
   rol ENUM('alumno', 'docente') NOT NULL,
   PRIMARY KEY (id_alumno_programa),
   FOREIGN KEY (ci_participante) REFERENCES participante(ci),
-  FOREIGN KEY (nombre_programa) REFERENCES programa_academico(nombre_programa)
+  FOREIGN KEY (id_programa) REFERENCES programa_academico(id_programa)
 );
 
 CREATE TABLE edificio(
+    id_edificio INT AUTO_INCREMENT,
     nombre_edificio VARCHAR(255) NOT NULL,
     direccion VARCHAR(255) NOT NULL,
     departamento VARCHAR(255),
-    PRIMARY KEY (nombre_edificio)
+    PRIMARY KEY (id_edificio)
 );
 
 
 CREATE TABLE sala(
+    id_sala INT AUTO_INCREMENT,
     nombre_sala VARCHAR(255) NOT NULL,
-    edificio VARCHAR(255) NOT NULL,
+    id_edificio INT NOT NULL,
     capacidad INT NOT NULL,
     tipo_sala ENUM('libre', 'postgrado', 'docente') NOT NULL,
-    PRIMARY KEY (nombre_sala, edificio),
-    FOREIGN KEY (edificio) REFERENCES edificio(nombre_edificio)
+    PRIMARY KEY (id_sala),
+    FOREIGN KEY (id_edificio) REFERENCES edificio(id_edificio)
 );
 
 
@@ -71,13 +73,12 @@ CREATE TABLE turno(
 
 CREATE TABLE reserva(
   id_reserva INT AUTO_INCREMENT,
-  nombre_sala VARCHAR(255) NOT NULL,
-  edificio VARCHAR(255) NOT NULL,
+  id_sala INT NOT NULL,
   fecha DATETIME NOT NULL,
   id_turno INT NOT NULL,
   estado ENUM('activa', 'cancelada', 'sin asistencia', 'finalizada') NOT NULL,
   PRIMARY KEY (id_reserva),
-  FOREIGN KEY (nombre_sala, edificio) REFERENCES sala(nombre_sala, edificio),
+  FOREIGN KEY (id_sala) REFERENCES sala(id_sala),
   FOREIGN KEY (id_turno) REFERENCES turno(id_turno)
 );
 
