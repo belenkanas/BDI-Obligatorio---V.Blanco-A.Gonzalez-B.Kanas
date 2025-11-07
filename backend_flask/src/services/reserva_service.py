@@ -1,30 +1,31 @@
 from database.obligatorio import conexion
 
-def listar_programas():
+def listar_reservas():
     conn = conexion()
     cursor = conn.cursor(dictionary=True)
     
-    cursor.execute("SELECT * FROM programa_academico")
+    cursor.execute("SELECT * FROM reserva")
     
-    programas = cursor.fetchall()
+    reservas = cursor.fetchall()
     conn.close()
     
-    return programas
+    return reservas
 
 
-def obtener_programa(id_programa):
+def obtener_reserva(id_reserva):
     conn = conexion()
     cursor = conn.cursor(dictionary=True)
     
-    cursor.execute("SELECT * FROM programa_academico WHERE id_programa = %s", (id_programa,))
+    cursor.execute("SELECT * FROM reserva WHERE id_reserva = %s", (id_reserva,))
     
-    programa = cursor.fetchone()
+    reserva = cursor.fetchone()
     conn.close()
     
-    return programa
+    return reserva
 
 
-def crear_programa(nombre_programa, id_facultad, tipo):
+'''
+def crear_reserva(nombre_programa, id_facultad, tipo):
     conn = conexion()
     cursor = conn.cursor(dictionary=True)
 
@@ -41,9 +42,9 @@ def crear_programa(nombre_programa, id_facultad, tipo):
     conn.close()
     
     return {"id_programa": nuevo_id, "nombre_programa": nombre_programa, "id_facultad": id_facultad, "tipo": tipo}, "Programa creado exitosamente"
+'''
 
-
-def eliminar_programa(id_programa):
+def cancelar_reserva(id_programa):
     conn = conexion()
     cursor = conn.cursor()
     
