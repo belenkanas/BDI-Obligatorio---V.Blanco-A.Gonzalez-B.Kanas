@@ -30,15 +30,15 @@ def obtener(id_reserva):
 def crear():
     data = request.get_json()
     id_sala = data.get('id_sala')
-    fecha = data.get('fecha')  # formato esperado: "YYYY-MM-DD"
+    fecha = data.get('fecha')  # formato "YYYY-MM-DD"
     id_turno = data.get('id_turno')
     estado = data.get('estado', 'activa')
+    participantes = data.get('participantes', [])  # lista de CIs
 
-    reserva, mensaje = crear_reserva(id_sala, fecha, id_turno, estado)
+    reserva, mensaje = crear_reserva(id_sala, fecha, id_turno, estado, participantes)
     if reserva:
         return jsonify({"mensaje": mensaje, "reserva": reserva}), 201
     return jsonify({"mensaje": mensaje}), 400
-
 
 # Actualizar estado
 @reserva_bp.route('/reservas/<int:id_reserva>/estado', methods=['PUT'])
