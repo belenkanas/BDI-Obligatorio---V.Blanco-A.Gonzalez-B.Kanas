@@ -1,4 +1,4 @@
-use obligatorio;
+USE obligatorio;
 
 /*    salas más reservadas    */
 SELECT s.nombre_sala, COUNT(r.id_reserva) AS masReservada
@@ -20,7 +20,7 @@ FROM (SELECT r.id_sala, COUNT(rp.ci_participante) AS cantidad_participantes
       FROM obligatorio.reserva r
       JOIN obligatorio.reserva_participante rp ON r.id_reserva = rp.id_reserva
       GROUP BY r.id_reserva, r.id_sala) AS subQuery
-JOIN obligatorio.sala s ON subQuery.id_sala = s.id_Sala
+JOIN obligatorio.sala s ON subQuery.id_sala = s.id_sala
 GROUP BY s.nombre_sala
 ORDER BY promedio DESC;
 
@@ -36,10 +36,12 @@ ORDER BY cantidad_reservas DESC;
 
 /*    porcentaje de ocupación de salas por edificio    */
 SELECT e.nombre_edificio, (SUM(reservas_sala.participantes) / SUM(s.capacidad)) * 100 AS porcentaje
-FROM (SELECT r.id_sala, r.edificio, COUNT(rp.ci_participante) AS participantes
+FROM (
+      SELECT r.id_sala, COUNT(rp.ci_participante) AS participantes
       FROM obligatorio.reserva r
       JOIN obligatorio.reserva_participante rp ON r.id_reserva = rp.id_reserva
-      GROUP BY r.id_sala) AS reservas_sala
+      GROUP BY r.id_sala
+      ) AS reservas_sala
 JOIN obligatorio.sala s ON reservas_sala.id_sala = s.id_sala
 JOIN obligatorio.edificio e ON s.id_edificio = e.id_edificio
 GROUP BY e.nombre_edificio
@@ -79,7 +81,7 @@ LEFT JOIN obligatorio.reserva r ON r.id_sala= s.id_sala
 WHERE r.id_reserva IS NULL
 ORDER BY e.nombre_edificio, s.nombre_sala;
 
-/*    Participantes que más cancelan  (se podrían aplicar sanciones más severas) */
+/*    Participantes que más cancelan(se podrían aplicar sanciones más severas) */
 SELECT rp.ci_participante, COUNT(*) AS reservas_totales, SUM(r.estado IN ('cancelada','sin asistencia')) AS no_efectivas, ROUND(100 * SUM(r.estado IN ('cancelada','sin asistencia')) / COUNT(*), 1) AS cuanta_cancelacion
 FROM obligatorio.reserva r
 JOIN obligatorio.reserva_participante rp ON rp.id_reserva = r.id_reserva
