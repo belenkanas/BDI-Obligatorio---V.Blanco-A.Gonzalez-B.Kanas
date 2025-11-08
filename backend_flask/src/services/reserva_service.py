@@ -1,57 +1,85 @@
 from database.obligatorio import conexion
 
 def listar_reservas():
-    conn = conexion()
-    cursor = conn.cursor(dictionary=True)
-    
-    cursor.execute("SELECT * FROM reserva")
-    
+    conection = conexion()
+    cursor = conection.cursor(dictionary=True)
+    cursor.execute("""
+        SELECT r.id_reserva, r.fecha, r.estado,
+               s.nombre_sala, t.hora_inicio, t.hora_fin
+        FROM reserva r
+        JOIN sala s ON r.id_sala = s.id_sala
+        JOIN turno t ON r.id_turno = t.id_turno
+        ORDER BY r.fecha DESC, t.hora_inicio
+    """)
     reservas = cursor.fetchall()
-    conn.close()
-    
+    conection.close()
     return reservas
 
 
 def obtener_reserva(id_reserva):
     conn = conexion()
     cursor = conn.cursor(dictionary=True)
-    
-    cursor.execute("SELECT * FROM reserva WHERE id_reserva = %s", (id_reserva,))
-    
+    cursor.execute("""
+        SELECT r.id_reserva, r.fecha, r.estado,
+               s.nombre_sala, s.id_sala,
+               t.id_turno, t.hora_inicio, t.hora_fin
+        FROM reserva r
+        JOIN sala s ON r.id_sala = s.id_sala
+        JOIN turno t ON r.id_turno = t.id_turno
+        WHERE r.id_reserva = %s
+    """, (id_reserva,))
     reserva = cursor.fetchone()
     conn.close()
-    
     return reserva
 
-
-'''
-def crear_reserva(nombre_programa, id_facultad, tipo):
+def crear_reserva(id_sala, fecha, id_turno, estado="activa"):
     conn = conexion()
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT * FROM programa_academico WHERE nombre_programa = %s", (nombre_programa,))
-    
-    if cursor.fetchone():
+    # Validar existencia de sala y turno
+    cursor.execute("SELECT id_sala FROM sala WHERE id_sala = %s", (id_sala,))
+    if not cursor.fetchone():
         conn.close()
-        return None, "El programa académico ya existe"
+        return None, "La sala especificada no existe"
 
-    cursor.execute("INSERT INTO programa_academico (nombre_programa, id_facultad, tipo) VALUES (%s, %s, %s)", (nombre_programa, id_facultad, tipo))
-    
+    cursor.execute("SELECT id_turno FROM turno WHERE id_turno = %s", (id_turno,))
+    if not cursor.fetchone():
+        conn.close()
+        return None, "El turno especificado no existe"
+
+    # Crear la reserva
+    cursor.execute("""
+        INSERT INTO reserva (id_sala, fecha, id_turno, estado)
+        VALUES (%s, %s, %s, %s)
+    """, (id_sala, fecha, id_turno, estado))
     conn.commit()
-    nuevo_id = cursor.lastrowid
-    conn.close()
-    
-    return {"id_programa": nuevo_id, "nombre_programa": nombre_programa, "id_facultad": id_facultad, "tipo": tipo}, "Programa creado exitosamente"
-'''
 
-def cancelar_reserva(id_programa):
+    nueva_id = cursor.lastrowid
+    conn.close()
+
+    return {
+        "id_reserva": nueva_id,
+        "id_sala": id_sala,
+        "fecha": fecha,
+        "id_turno": id_turno,
+        "estado": estado
+    }, "Reserva creada exitosamente"
+
+def actualizar_estado_reserva(id_reserva, nuevo_estado):
     conn = conexion()
-    cursor = conn.cursor()
-    
-    cursor.execute("DELETE FROM programa_academico WHERE id_programa = %s", (id_programa,))
-    
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("SELECT * FROM reserva WHERE id_reserva = %s", (id_reserva,))
+    if not cursor.fetchone():
+        conn.close()
+        return None, "La reserva no existe"
+
+    cursor.execute("UPDATE reserva SET estado = %s WHERE id_reserva = %s", (nuevo_estado, id_reserva))
     conn.commit()
-    filas = cursor.rowcount
     conn.close()
-    
-    return filas > 0
+
+    return {"id_reserva": id_reserva, "nuevo_estado": nuevo_estado}, "Estado actualizado correctamente"
+
+
+def cancelar_reserva(id_reserva):
+    return actualizar_estado_reserva(id_reserva, "cancelada")
