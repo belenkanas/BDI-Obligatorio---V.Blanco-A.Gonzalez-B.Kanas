@@ -15,14 +15,14 @@ GROUP BY t.id_turno, t.hora_inicio, t.hora_fin
 ORDER BY masDemandados DESC;
 
 /*    promedio de participantes por sala    */
-SELECT s.nombre_sala, AVG(subQuery.cantidad_participantes) AS promedio
+SELECT s.nombre_sala, AVG(subQuery.cantidad_participantes) AS promedio_participantes
 FROM (SELECT r.id_sala, COUNT(rp.ci_participante) AS cantidad_participantes
       FROM obligatorio.reserva r
       JOIN obligatorio.reserva_participante rp ON r.id_reserva = rp.id_reserva
       GROUP BY r.id_reserva, r.id_sala) AS subQuery
 JOIN obligatorio.sala s ON subQuery.id_sala = s.id_sala
 GROUP BY s.nombre_sala
-ORDER BY promedio DESC;
+ORDER BY promedio_participantes DESC;
 
 /*    cantidad de reservas por carrera y facultad    */
 SELECT f.nombre, pa.nombre_programa, COUNT(DISTINCT r.id_reserva) AS cantidad_reservas
@@ -35,7 +35,7 @@ GROUP BY f.nombre, pa.nombre_programa
 ORDER BY cantidad_reservas DESC;
 
 /*    porcentaje de ocupación de salas por edificio    */
-SELECT e.nombre_edificio, (SUM(reservas_sala.participantes) / SUM(s.capacidad)) * 100 AS porcentaje
+SELECT e.nombre_edificio, (SUM(reservas_sala.participantes) / SUM(s.capacidad)) * 100 AS porcentaje_ocupacion
 FROM (
       SELECT r.id_sala, COUNT(rp.ci_participante) AS participantes
       FROM obligatorio.reserva r
@@ -45,7 +45,7 @@ FROM (
 JOIN obligatorio.sala s ON reservas_sala.id_sala = s.id_sala
 JOIN obligatorio.edificio e ON s.id_edificio = e.id_edificio
 GROUP BY e.nombre_edificio
-ORDER BY porcentaje DESC;
+ORDER BY porcentaje_ocupacion DESC;
 
 /*    cantidad de reservas y asistencias de profesores y alumnos (grado y posgrado)    */
 SELECT ppa.rol, pa.tipo, COUNT(DISTINCT rp.id_reserva) AS reservas, SUM(rp.asistencia) AS asistencias
@@ -93,7 +93,7 @@ ORDER BY cuanta_cancelacion DESC, reservas_totales DESC;
 SELECT pa.nombre_programa, COUNT(DISTINCT e.id_edificio) AS edificios_usados
 FROM obligatorio.reserva r
 JOIN obligatorio.sala s ON r.id_sala = s.id_sala
-JOIN edificio e ON s.id_edificio = e.id_edificio
+JOIN obligatorio.edificio e ON s.id_edificio = e.id_edificio
 JOIN obligatorio.reserva_participante rp ON rp.id_reserva = r.id_reserva
 JOIN obligatorio.participante_programa_academico ppa ON ppa.ci_participante = rp.ci_participante
 JOIN obligatorio.programa_academico pa ON pa.id_programa = ppa.id_programa
