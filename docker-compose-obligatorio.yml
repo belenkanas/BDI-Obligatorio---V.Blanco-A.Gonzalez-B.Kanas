@@ -1,0 +1,32 @@
+version: '3.9'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: obligatorio_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: obligatorio
+    ports:
+      - "3307:3306"        # puerto local 3307 → contenedor 3306
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+
+  flask_app:
+    build: .
+    container_name: obligatorio_backend
+    restart: always
+    depends_on:
+      - db
+    env_file:
+    - .env
+    ports:
+      - "5001:5000"        # puerto local 5001 → Flask 5000
+    volumes:
+      - ./backend_flask/src:/app
+    command: python __init__.py
+
+volumes:
+  db_data:
