@@ -1,12 +1,22 @@
-import mysql.connector 
+import mysql.connector
+import json
+import os
 
 def conexion():
-  return mysql.connector.connect(user='root', 
-                                 password='rootpassword',
-                                 host='127.0.0.1',
-                                 database='obligatorio')
+    # Ruta absoluta al config.json en la raíz del proyecto
+    config_path = os.path.join(os.path.dirname(__file__), "../../..", "config.json")
 
+    with open(config_path, "r") as f:
+        config = json.load(f)
 
+    return mysql.connector.connect(
+        user=config["DB_USER"],
+        password=config["DB_PASSWORD"],
+        host=config["DB_HOST"],
+        database=config["DB_NAME"]
+    )
+
+#Funciones según las consultas iniciales en SQL
 def listar_participantes():
   cnx = conexion()
   cursor = cnx.cursor()
