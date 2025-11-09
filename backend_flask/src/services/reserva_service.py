@@ -1,4 +1,4 @@
-from database.obligatorio import conexion
+from backend_flask.src.database.conexion_db import conexion
 from datetime import datetime, timedelta
 from services.sancion_participante_service import sancionar_participantes_sin_asistencia
 

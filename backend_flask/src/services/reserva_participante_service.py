@@ -1,4 +1,4 @@
-from database.obligatorio import conexion
+from backend_flask.src.database.conexion_db import conexion
 from datetime import datetime
 
 

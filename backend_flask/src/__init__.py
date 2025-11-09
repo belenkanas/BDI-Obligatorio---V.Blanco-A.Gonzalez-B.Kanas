@@ -1,5 +1,5 @@
 from flask import Flask
-from database.obligatorio import conexion
+from backend_flask.src.database.conexion_db import conexion
 from endpoints.login_bp import login_bp
 from endpoints.participante_bp import participante_bp
 from endpoints.programa_academico_bp import programa_academico_bp
