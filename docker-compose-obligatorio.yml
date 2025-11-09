@@ -5,28 +5,38 @@ services:
     image: mysql:8.0
     container_name: obligatorio_db
     restart: always
+    env_file: 
+      - .env
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: obligatorio
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
-      - "3307:3306"        # puerto local 3307 → contenedor 3306
+      - "3307:3306"
     volumes:
       - db_data:/var/lib/mysql
       - ./sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
 
-  flask_app:
-    build: .
-    container_name: obligatorio_backend
+  flask:
+    build: 
+      context: ./backend_flask
+      dockerfile: ../Dockerfile
+    container_name: obligatorio_flask
     restart: always
-    depends_on:
-      - db
     env_file:
-    - .env
+      - .env
     ports:
-      - "5001:5000"        # puerto local 5001 → Flask 5000
+      - "5000:5000"
+    depends_on:
+      db:
+        condition: service_healthy
     volumes:
-      - ./backend_flask/src:/app
-    command: python __init__.py
+      - ./backend_flask:/app
 
 volumes:
   db_data:
