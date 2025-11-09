@@ -168,34 +168,243 @@ def crear_reserva(id_sala, fecha, id_turno, estado="activa", participantes=None)
 
 
 
-def actualizar_estado_reserva(id_reserva, nuevo_estado):
+def actualizar_estado_reserva(id_reserva, nuevo_estado, asistencias=None):
     conn = conexion()
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT * FROM reserva WHERE id_reserva = %s", (id_reserva,))
-    reserva = cursor.fetchone()
-    if not reserva:
-        conn.close()
-        return None, "La reserva no existe"
+    try:
+        # Verificar que la reserva exista
+        cursor.execute("SELECT * FROM reserva WHERE id_reserva = %s", (id_reserva,))
+        reserva = cursor.fetchone()
+        if not reserva:
+            conn.close()
+            return None, "La reserva no existe"
 
-    cursor.execute("UPDATE reserva SET estado = %s WHERE id_reserva = %s", (nuevo_estado, id_reserva))
-    conn.commit()
-    conn.close()
+        # Actualizar estado
+        cursor.execute("""
+            UPDATE reserva
+            SET estado = %s
+            WHERE id_reserva = %s
+        """, (nuevo_estado, id_reserva))
+        conn.commit()
 
-    # Ejecutar sanción automática (de sancion_participante_service)
-    if nuevo_estado == "sin asistencia":
-        sancionados, mensaje_sancion = sancionar_participantes_sin_asistencia(id_reserva)
-        if sancionados:
+        # Si pasa a “sin asistencia”, sancionar automáticamente
+        if nuevo_estado == "sin asistencia":
+            sancionados, mensaje = sancionar_participantes_sin_asistencia(id_reserva)
+            conn.close()
+            if sancionados:
+                return {
+                    "id_reserva": id_reserva,
+                    "nuevo_estado": nuevo_estado,
+                    "sancionados": sancionados
+                }, f"Reserva actualizada y sanción aplicada: {mensaje}"
+            else:
+                return {"id_reserva": id_reserva, "nuevo_estado": nuevo_estado}, mensaje
+
+        #Si el estado es 'finalizada' y se desean regirstrar asistencias
+        if nuevo_estado == "finalizada" and asistencias:
+            # Actualizar asistencias uno por uno
+            for ci, asistencia in asistencias.items():
+                cursor.execute("""
+                    UPDATE reserva_participante
+                    SET asistencia = %s
+                    WHERE id_reserva = %s AND ci_participante = %s
+                """, (asistencia, id_reserva, ci))
+            conn.commit()
+
+            # Revisar si todos faltaron
+            cursor.execute("""
+                SELECT COUNT(*) AS total,
+                       SUM(CASE WHEN asistencia = TRUE THEN 1 ELSE 0 END) AS presentes
+                FROM reserva_participante
+                WHERE id_reserva = %s
+            """, (id_reserva,))
+            data = cursor.fetchone()
+
+            if data['presentes'] == 0:
+                sancionados, mensaje = sancionar_participantes_sin_asistencia(id_reserva)
+                conn.close()
+                return {
+                    "id_reserva": id_reserva,
+                    "nuevo_estado": nuevo_estado,
+                    "sancionados": sancionados
+                }, f"Reserva finalizada. Todos faltaron. {mensaje}"
+
+            conn.close()
             return {
                 "id_reserva": id_reserva,
                 "nuevo_estado": nuevo_estado,
-                "sancionados": sancionados
-            }, f"Estado actualizado y {len(sancionados)} participantes sancionados"
-        else:
-            return {"id_reserva": id_reserva, "nuevo_estado": nuevo_estado}, mensaje_sancion
+                "asistencias": asistencias
+            }, "Reserva finalizada y asistencias registradas correctamente."
 
-    return {"id_reserva": id_reserva, "nuevo_estado": nuevo_estado}, "Estado actualizado correctamente"
+        conn.close()
+        return {"id_reserva": id_reserva, "nuevo_estado": nuevo_estado}, "Reserva actualizada exitosamente"
 
+    except Exception as e:
+        conn.rollback()
+        conn.close()
+        return None, f"Error al actualizar el estado de la reserva: {str(e)}"
+
+
+def registrar_asistencias(id_reserva, asistencias):
+    """
+    Marca la asistencia (True/False) de los participantes de una reserva.
+    Si todos faltan, sanciona automáticamente.
+    """
+    conn = conexion()
+    cursor = conn.cursor(dictionary=True)
+
+    try:
+        # Verificar que la reserva exista
+        cursor.execute("SELECT * FROM reserva WHERE id_reserva = %s", (id_reserva,))
+        reserva = cursor.fetchone()
+        if not reserva:
+            conn.close()
+            return None, "La reserva no existe"
+
+        # Verificar que tenga participantes
+        cursor.execute("""
+            SELECT ci_participante FROM reserva_participante
+            WHERE id_reserva = %s
+        """, (id_reserva,))
+        participantes = cursor.fetchall()
+        if not participantes:
+            conn.close()
+            return None, "La reserva no tiene participantes"
+
+        # Actualizar asistencia por participante
+        for p in participantes:
+            ci = p['ci_participante']
+            asistencia = asistencias.get(ci)
+            if asistencia is not None:
+                cursor.execute("""
+                    UPDATE reserva_participante
+                    SET asistencia = %s
+                    WHERE id_reserva = %s AND ci_participante = %s
+                """, (asistencia, id_reserva, ci))
+
+        conn.commit()
+
+        # Verificar si todos faltaron
+        cursor.execute("""
+            SELECT COUNT(*) AS total,
+                   SUM(CASE WHEN asistencia = TRUE THEN 1 ELSE 0 END) AS presentes
+            FROM reserva_participante
+            WHERE id_reserva = %s
+        """, (id_reserva,))
+        data = cursor.fetchone()
+
+        if data['presentes'] == 0:
+            # Si nadie asistió → aplicar sanciones automáticamente
+            sancionados, mensaje = sancionar_participantes_sin_asistencia(id_reserva)
+            conn.close()
+            return {"sancionados": sancionados}, f"Todos faltaron. {mensaje}"
+
+        conn.close()
+        return {"id_reserva": id_reserva, "asistencias_registradas": asistencias}, "Asistencias registradas correctamente"
+
+    except Exception as e:
+        conn.rollback()
+        conn.close()
+        return None, f"Error al registrar asistencias: {str(e)}"
+
+def listar_reservas_con_asistencias_filtro(estado=None, fecha_desde=None, fecha_hasta=None, id_edificio=None, tipo_sala=None):
+    """
+    Retorna reservas con información completa (sala, edificio, participantes, asistencias),
+    aplicando filtros opcionales:
+      - estado
+      - rango de fechas
+      - edificio
+      - tipo de sala
+    """
+    conn = conexion()
+    cursor = conn.cursor(dictionary=True)
+
+    query = """
+        SELECT 
+            r.id_reserva,
+            r.fecha,
+            r.estado,
+            t.hora_inicio,
+            t.hora_fin,
+            s.nombre_sala,
+            s.tipo_sala,
+            e.nombre_edificio,
+            e.direccion,
+            p.ci AS ci_participante,
+            p.nombre AS nombre_participante,
+            p.apellido AS apellido_participante,
+            rp.asistencia,
+            rp.fecha_solicitud_reserva
+        FROM reserva r
+        JOIN turno t ON r.id_turno = t.id_turno
+        JOIN sala s ON r.id_sala = s.id_sala
+        JOIN edificio e ON s.id_edificio = e.id_edificio
+        LEFT JOIN reserva_participante rp ON r.id_reserva = rp.id_reserva
+        LEFT JOIN participante p ON rp.ci_participante = p.ci
+        WHERE 1=1
+    """
+
+    params = []
+
+    if estado:
+        query += " AND r.estado = %s"
+        params.append(estado)
+
+    if fecha_desde:
+        query += " AND r.fecha >= %s"
+        params.append(fecha_desde)
+
+    if fecha_hasta:
+        query += " AND r.fecha <= %s"
+        params.append(fecha_hasta)
+
+    if id_edificio:
+        query += " AND e.id_edificio = %s"
+        params.append(id_edificio)
+
+    if tipo_sala:
+        query += " AND s.tipo_sala = %s"
+        params.append(tipo_sala)
+
+    query += " ORDER BY r.fecha DESC, r.id_reserva DESC"
+
+    cursor.execute(query, tuple(params))
+    filas = cursor.fetchall()
+    conn.close()
+
+    # Agrupar por reserva
+    reservas_dict = {}
+    for fila in filas:
+        id_reserva = fila["id_reserva"]
+        if id_reserva not in reservas_dict:
+            reservas_dict[id_reserva] = {
+                "id_reserva": id_reserva,
+                "fecha": fila["fecha"],
+                "estado": fila["estado"],
+                "turno": {
+                    "hora_inicio": str(fila["hora_inicio"]),
+                    "hora_fin": str(fila["hora_fin"])
+                },
+                "sala": {
+                    "nombre_sala": fila["nombre_sala"],
+                    "tipo_sala": fila["tipo_sala"],
+                    "edificio": fila["nombre_edificio"],
+                    "direccion": fila["direccion"]
+                },
+                "participantes": []
+            }
+
+        if fila["ci_participante"]:
+            reservas_dict[id_reserva]["participantes"].append({
+                "ci": fila["ci_participante"],
+                "nombre": fila["nombre_participante"],
+                "apellido": fila["apellido_participante"],
+                "asistencia": fila["asistencia"],
+                "fecha_solicitud_reserva": fila["fecha_solicitud_reserva"]
+            })
+
+    return list(reservas_dict.values())
 
 def cancelar_reserva(id_reserva):
     return actualizar_estado_reserva(id_reserva, "cancelada")
