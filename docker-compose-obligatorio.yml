@@ -1,11 +1,9 @@
-version: '3.9'
-
 services:
   db:
     image: mysql:8.0
     container_name: obligatorio_db
     restart: always
-    env_file: 
+    env_file:
       - .env
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
@@ -23,9 +21,7 @@ services:
       retries: 10
 
   flask:
-    build: 
-      context: ./backend_flask
-      dockerfile: ../Dockerfile
+    build: ./backend_flask
     container_name: obligatorio_flask
     restart: always
     env_file:
@@ -35,8 +31,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    volumes:
-      - ./backend_flask:/app
 
 volumes:
   db_data:

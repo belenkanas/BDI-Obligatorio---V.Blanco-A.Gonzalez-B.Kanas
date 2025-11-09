@@ -1,14 +1,14 @@
 import mysql.connector
-import json
 import os
 
 def conexion():
     return mysql.connector.connect(
-        user=os.environ["DB_USER"],
-        password=os.environ["DB_PASSWORD"],
-        host=os.environ["DB_HOST"],
-        database=os.environ["DB_NAME"]
+        user=os.environ.get("DB_USER"),
+        password=os.environ.get("DB_PASSWORD"),
+        host=os.environ.get("DB_HOST"),
+        database=os.environ.get("DB_NAME")
     )
+
 
 #Funciones según las consultas iniciales en SQL
 def listar_participantes():
