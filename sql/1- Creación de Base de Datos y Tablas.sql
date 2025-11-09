@@ -58,7 +58,7 @@ CREATE TABLE sala(
     nombre_sala VARCHAR(255) NOT NULL,
     id_edificio INT NOT NULL,
     capacidad INT NOT NULL,
-    tipo_sala ENUM('libre', 'postgrado', 'docente') NOT NULL,
+    tipo_sala ENUM('libre', 'posgrado', 'docente') NOT NULL,
     PRIMARY KEY (id_sala),
     FOREIGN KEY (id_edificio) REFERENCES edificio(id_edificio)
 );
@@ -74,7 +74,7 @@ CREATE TABLE turno(
 CREATE TABLE reserva(
   id_reserva INT AUTO_INCREMENT,
   id_sala INT NOT NULL,
-  fecha DATETIME NOT NULL,
+  fecha DATE NOT NULL, #El turno ya está indicado en su respectiva tabla
   id_turno INT NOT NULL,
   estado ENUM('activa', 'cancelada', 'sin asistencia', 'finalizada') NOT NULL,
   PRIMARY KEY (id_reserva),

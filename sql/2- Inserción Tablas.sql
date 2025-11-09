@@ -1,4 +1,4 @@
-use obligatorio;
+USE obligatorio;
 
 /*Login*/
 INSERT INTO obligatorio.login(correo, contraseña)
@@ -12,6 +12,7 @@ VALUES ('valentina.blanco@correo.ucu.edu.uy', 'valentina123'),
        ('pedro.silva@correo.ucu.edu.uy', 'ucu8932ohwel'),
        ('jose.martinez@correo.ucu.edu.uy', 'hureik213'),
        ('luis.sanchez@correo.ucu.edu.uy', 'fre2y89w');
+
 
 /*Participante*/
 INSERT INTO obligatorio.participante(ci, nombre, apellido, email)
@@ -48,7 +49,6 @@ VALUES
 ('Maestría en Administración (MBA)', (SELECT id_facultad FROM facultad WHERE nombre = 'Facultad de Ciencias Empresariales'), 'postgrado'),
 ('Especialización en Neuropsicología', (SELECT id_facultad FROM facultad WHERE nombre = 'Facultad de Psicología y Bienestar Humano'), 'postgrado');
 
-
 /*Participante Programa Académico*/
 INSERT INTO obligatorio.participante_programa_academico (ci_participante, id_programa, rol)
 VALUES
@@ -77,13 +77,13 @@ VALUES ('Edificio San José', 'Av. 8 de Octubre 2733', 'Departamento de Medicina
 INSERT INTO obligatorio.sala (nombre_sala, id_edificio, capacidad, tipo_sala)
 VALUES
 ('Aula Magna', (SELECT id_edificio FROM edificio WHERE nombre_edificio='Edificio Sacré Coeur'), 200, 'libre'),
-('Sala Zoom', (SELECT id_edificio FROM edificio WHERE nombre_edificio='Edificio Semprún'), 50, 'postgrado'),
+('Sala Zoom', (SELECT id_edificio FROM edificio WHERE nombre_edificio='Edificio Semprún'), 50, 'posgrado'),
 ('Cowork de Ludus', (SELECT id_edificio FROM edificio WHERE nombre_edificio='Edificio Sacré Coeur'), 35, 'docente'),
 ('Laboratorio', (SELECT id_edificio FROM edificio WHERE nombre_edificio='Edificio Mullin'), 100, 'libre'),
 ('TI3', (SELECT id_edificio FROM edificio WHERE nombre_edificio='Edificio Sacré Coeur'), 50, 'libre'),
 ('Sala del silencio', (SELECT id_edificio FROM edificio WHERE nombre_edificio='Edificio San Ignacio'), 5, 'libre'),
 ('Sala de docentes', (SELECT id_edificio FROM edificio WHERE nombre_edificio='Edificio San José'), 20, 'docente'),
-('Sala de postgrados', (SELECT id_edificio FROM edificio WHERE nombre_edificio='Edificio Madre Marta'), 40, 'postgrado'),
+('Sala de postgrados', (SELECT id_edificio FROM edificio WHERE nombre_edificio='Edificio Madre Marta'), 40, 'posgrado'),
 ('Sala de grabación', (SELECT id_edificio FROM edificio WHERE nombre_edificio='Edificio Athanasius'), 40, 'libre');
 
 /*Turnos*/
