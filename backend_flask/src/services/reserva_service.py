@@ -1,5 +1,7 @@
 from database.obligatorio import conexion
-from datetime import datetime
+from datetime import datetime, timedelta
+from services.sancion_participante_service import sancionar_participantes_sin_asistencia
+
 
 def listar_reservas():
     conection = conexion()
@@ -43,6 +45,7 @@ def crear_reserva(id_sala, fecha, id_turno, estado="activa", participantes=None)
     --> No se pueda participar en más de 3 reservas activas en una semana
     --> No se pueda estar más de 2 horas diarias en el mismo edificio
     Hacer excepción con docentes y estudiantes de posgrado
+    Se verifica también que personas sancionadas no puedan reservar
     """
     conection = conexion()
     cursor = conection.cursor(dictionary=True)
@@ -71,12 +74,17 @@ def crear_reserva(id_sala, fecha, id_turno, estado="activa", participantes=None)
             conection.close()
             return None, f"La sala tiene capacidad para {sala['capacidad']} personas, pero se intentan registrar {len(participantes)}."
 
-        # Insertar reserva
-        cursor.execute("""
-            INSERT INTO reserva (id_sala, fecha, id_turno, estado)
-            VALUES (%s, %s, %s, %s)
-        """, (id_sala, fecha, id_turno, estado))
-        nueva_id = cursor.lastrowid
+        #Validar sanciones
+        for ci in participantes or []:
+            cursor.execute("""
+                SELECT * FROM sancion_participante
+                WHERE ci_participante = %s
+                AND NOW() BETWEEN fecha_inicio AND fecha_fin
+            """, (ci,))
+            sancion = cursor.fetchone()
+            if sancion:
+                conection.close()
+                return None, f"El participante {ci} tiene una sanción vigente y no puede realizar reservas hasta {sancion['fecha_fin']}."
 
         #Revisar restricciones según los roles, tipo de programa y tipo de sala
         cursor.execute("""
@@ -86,11 +94,9 @@ def crear_reserva(id_sala, fecha, id_turno, estado="activa", participantes=None)
             WHERE ppa.ci_participante IN (%s)
         """ % ','.join(['%s'] * len(participantes)), tuple(participantes))
         roles = cursor.fetchall()
-
-        # Mapa de roles y tipo para cada participante
         participantes_roles = {r['ci_participante']: (r['rol'], r['tipo']) for r in roles}
 
-        for ci in participantes:
+        for ci in participantes or []:
             rol, tipo = participantes_roles.get(ci, (None, None))
             tipo_sala = sala['tipo_sala']
 
@@ -161,18 +167,32 @@ def crear_reserva(id_sala, fecha, id_turno, estado="activa", participantes=None)
         return None, f"Error al crear la reserva: {str(e)}"
 
 
+
 def actualizar_estado_reserva(id_reserva, nuevo_estado):
     conn = conexion()
     cursor = conn.cursor(dictionary=True)
 
     cursor.execute("SELECT * FROM reserva WHERE id_reserva = %s", (id_reserva,))
-    if not cursor.fetchone():
+    reserva = cursor.fetchone()
+    if not reserva:
         conn.close()
         return None, "La reserva no existe"
 
     cursor.execute("UPDATE reserva SET estado = %s WHERE id_reserva = %s", (nuevo_estado, id_reserva))
     conn.commit()
     conn.close()
+
+    # Ejecutar sanción automática (de sancion_participante_service)
+    if nuevo_estado == "sin asistencia":
+        sancionados, mensaje_sancion = sancionar_participantes_sin_asistencia(id_reserva)
+        if sancionados:
+            return {
+                "id_reserva": id_reserva,
+                "nuevo_estado": nuevo_estado,
+                "sancionados": sancionados
+            }, f"Estado actualizado y {len(sancionados)} participantes sancionados"
+        else:
+            return {"id_reserva": id_reserva, "nuevo_estado": nuevo_estado}, mensaje_sancion
 
     return {"id_reserva": id_reserva, "nuevo_estado": nuevo_estado}, "Estado actualizado correctamente"
 
