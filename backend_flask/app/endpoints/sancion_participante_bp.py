@@ -1,9 +1,5 @@
 from flask import Blueprint, jsonify, request
-<<<<<<< HEAD:backend_flask/src/endpoints/sancion_participante_bp.py
-from services.sancion_participante_service import *
-=======
 from app.services.sancion_participante_service import *
->>>>>>> 0f41fcacfd9edfbb6bb53766061c2c1037d5f104:backend_flask/app/endpoints/sancion_participante_bp.py
 
 sanciones_bp = Blueprint('sanciones', __name__)
 
