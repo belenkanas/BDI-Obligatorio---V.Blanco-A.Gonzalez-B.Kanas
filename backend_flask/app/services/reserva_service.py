@@ -1,6 +1,6 @@
-from backend_flask.src.database.conexion_db import conexion
+from app.database.conexion_db import conexion
 from datetime import datetime, timedelta
-from services.sancion_participante_service import sancionar_participantes_sin_asistencia
+from app.services.sancion_participante_service import sancionar_participantes_sin_asistencia
 
 
 def listar_reservas():

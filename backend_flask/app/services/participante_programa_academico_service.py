@@ -1,4 +1,4 @@
-from backend_flask.src.database.conexion_db import conexion
+from app.database.conexion_db import conexion
 
 def listar_registros():
     conn = conexion()
