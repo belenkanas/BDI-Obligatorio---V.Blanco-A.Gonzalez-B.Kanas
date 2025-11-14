@@ -44,9 +44,9 @@ VALUES
 ('Psicología Clínica', (SELECT id_facultad FROM facultad WHERE nombre = 'Facultad de Psicología y Bienestar Humano'), 'grado'),
 ('Derecho', (SELECT id_facultad FROM facultad WHERE nombre = 'Facultad de Derecho y Ciencias Humanas'), 'grado'),
 ('Licenciatura en Comunicación', (SELECT id_facultad FROM facultad WHERE nombre = 'Facultad de Humanidades y Artes Liberales'), 'grado'),
-('Maestría en Ingeniería de Software', (SELECT id_facultad FROM facultad WHERE nombre = 'Facultad de Ingeniería y Tecnologías'), 'postgrado'),
-('Maestría en Administración (MBA)', (SELECT id_facultad FROM facultad WHERE nombre = 'Facultad de Ciencias Empresariales'), 'postgrado'),
-('Especialización en Neuropsicología', (SELECT id_facultad FROM facultad WHERE nombre = 'Facultad de Psicología y Bienestar Humano'), 'postgrado');
+('Maestría en Ingeniería de Software', (SELECT id_facultad FROM facultad WHERE nombre = 'Facultad de Ingeniería y Tecnologías'), 'posgrado'),
+('Maestría en Administración (MBA)', (SELECT id_facultad FROM facultad WHERE nombre = 'Facultad de Ciencias Empresariales'), 'posgrado'),
+('Especialización en Neuropsicología', (SELECT id_facultad FROM facultad WHERE nombre = 'Facultad de Psicología y Bienestar Humano'), 'posgrado');
 
 
 /*Participante Programa Académico*/
@@ -77,13 +77,13 @@ VALUES ('Edificio San José', 'Av. 8 de Octubre 2733', 'Departamento de Medicina
 INSERT INTO obligatorio.sala (nombre_sala, id_edificio, capacidad, tipo_sala)
 VALUES
 ('Aula Magna', (SELECT id_edificio FROM edificio WHERE nombre_edificio='Edificio Sacré Coeur'), 200, 'libre'),
-('Sala Zoom', (SELECT id_edificio FROM edificio WHERE nombre_edificio='Edificio Semprún'), 50, 'postgrado'),
+('Sala Zoom', (SELECT id_edificio FROM edificio WHERE nombre_edificio='Edificio Semprún'), 50, 'posgrado'),
 ('Cowork de Ludus', (SELECT id_edificio FROM edificio WHERE nombre_edificio='Edificio Sacré Coeur'), 35, 'docente'),
 ('Laboratorio', (SELECT id_edificio FROM edificio WHERE nombre_edificio='Edificio Mullin'), 100, 'libre'),
 ('TI3', (SELECT id_edificio FROM edificio WHERE nombre_edificio='Edificio Sacré Coeur'), 50, 'libre'),
 ('Sala del silencio', (SELECT id_edificio FROM edificio WHERE nombre_edificio='Edificio San Ignacio'), 5, 'libre'),
 ('Sala de docentes', (SELECT id_edificio FROM edificio WHERE nombre_edificio='Edificio San José'), 20, 'docente'),
-('Sala de postgrados', (SELECT id_edificio FROM edificio WHERE nombre_edificio='Edificio Madre Marta'), 40, 'postgrado'),
+('Sala de posgrados', (SELECT id_edificio FROM edificio WHERE nombre_edificio='Edificio Madre Marta'), 40, 'posgrado'),
 ('Sala de grabación', (SELECT id_edificio FROM edificio WHERE nombre_edificio='Edificio Athanasius'), 40, 'libre');
 
 /*Turnos*/
@@ -107,11 +107,11 @@ INSERT INTO obligatorio.turno (hora_inicio, hora_fin) VALUES
 /*Reservas*/
 INSERT INTO obligatorio.reserva (id_sala, fecha, id_turno, estado)
 VALUES
-((SELECT id_sala FROM sala WHERE nombre_sala='Aula Magna'), '2025-10-28 00:00:00', 3, 'activa'),
-((SELECT id_sala FROM sala WHERE nombre_sala='Sala Zoom'), '2025-10-28 00:00:00', 4, 'finalizada'),
-((SELECT id_sala FROM sala WHERE nombre_sala='Laboratorio'), '2025-10-29 00:00:00', 6, 'cancelada'),
-((SELECT id_sala FROM sala WHERE nombre_sala='Sala del silencio'), '2025-10-29 00:00:00', 8, 'activa'),
-((SELECT id_sala FROM sala WHERE nombre_sala='Sala de postgrados'), '2025-10-30 00:00:00', 10, 'sin asistencia');
+((SELECT id_sala FROM sala WHERE nombre_sala='Aula Magna'), '2025-10-28', 3, 'activa'),
+((SELECT id_sala FROM sala WHERE nombre_sala='Sala Zoom'), '2025-10-28', 4, 'finalizada'),
+((SELECT id_sala FROM sala WHERE nombre_sala='Laboratorio'), '2025-10-29', 6, 'cancelada'),
+((SELECT id_sala FROM sala WHERE nombre_sala='Sala del silencio'), '2025-10-29', 8, 'activa'),
+((SELECT id_sala FROM sala WHERE nombre_sala='Sala de posgrados'), '2025-10-30', 10, 'sin_asistencia');
 
 
 /*Reservas por participante*/
@@ -126,8 +126,8 @@ VALUES
 /*Sanciones*/
 INSERT INTO obligatorio.sancion_participante(ci_participante, fecha_inicio, fecha_fin)
 VALUES
-((SELECT ci FROM participante WHERE nombre='Andrea' AND apellido='González'), '2025-10-27 00:00:00', '2025-11-03 00:00:00'),
-((SELECT ci FROM participante WHERE nombre='Ana' AND apellido='López'), '2025-10-30 00:00:00', '2025-11-06 00:00:00'),
-((SELECT ci FROM participante WHERE nombre='Paz' AND apellido='García'), '2025-09-15 00:00:00', '2025-09-22 00:00:00'),
-((SELECT ci FROM participante WHERE nombre='Pedro' AND apellido='Silva'), '2025-10-10 00:00:00', '2025-10-17 00:00:00'),
-((SELECT ci FROM participante WHERE nombre='José' AND apellido='Martínez'), '2025-10-20 00:00:00', '2025-10-27 00:00:00');
+((SELECT ci FROM participante WHERE nombre='Andrea' AND apellido='González'), '2025-10-27', '2025-11-03'),
+((SELECT ci FROM participante WHERE nombre='Ana' AND apellido='López'), '2025-10-30', '2025-11-06'),
+((SELECT ci FROM participante WHERE nombre='Paz' AND apellido='García'), '2025-09-15', '2025-09-22'),
+((SELECT ci FROM participante WHERE nombre='Pedro' AND apellido='Silva'), '2025-10-10', '2025-10-17'),
+((SELECT ci FROM participante WHERE nombre='José' AND apellido='Martínez'), '2025-10-20', '2025-10-27');
