@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services.programa_academico_service import (listar_programas, obtener_programa, crear_programa, eliminar_programa)
+from app.services.programa_academico_service import (listar_programas, obtener_programa, crear_programa, eliminar_programa)
 
 programa_academico_bp = Blueprint('programa_academico', __name__)
 

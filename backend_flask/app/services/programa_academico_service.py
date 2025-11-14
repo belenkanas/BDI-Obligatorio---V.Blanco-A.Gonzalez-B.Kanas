@@ -1,4 +1,4 @@
-from database.obligatorio import conexion
+from app.database.conexion_db import conexion
 
 def listar_programas():
     conn = conexion()

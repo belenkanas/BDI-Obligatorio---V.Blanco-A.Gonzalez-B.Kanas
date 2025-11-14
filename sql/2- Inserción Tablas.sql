@@ -1,4 +1,4 @@
-use obligatorio;
+USE obligatorio;
 
 /*Login*/
 INSERT INTO obligatorio.login(correo, contraseña)
@@ -12,6 +12,7 @@ VALUES ('valentina.blanco@correo.ucu.edu.uy', 'valentina123'),
        ('pedro.silva@correo.ucu.edu.uy', 'ucu8932ohwel'),
        ('jose.martinez@correo.ucu.edu.uy', 'hureik213'),
        ('luis.sanchez@correo.ucu.edu.uy', 'fre2y89w');
+
 
 /*Participante*/
 INSERT INTO obligatorio.participante(ci, nombre, apellido, email)
@@ -44,10 +45,9 @@ VALUES
 ('Psicología Clínica', (SELECT id_facultad FROM facultad WHERE nombre = 'Facultad de Psicología y Bienestar Humano'), 'grado'),
 ('Derecho', (SELECT id_facultad FROM facultad WHERE nombre = 'Facultad de Derecho y Ciencias Humanas'), 'grado'),
 ('Licenciatura en Comunicación', (SELECT id_facultad FROM facultad WHERE nombre = 'Facultad de Humanidades y Artes Liberales'), 'grado'),
-('Maestría en Ingeniería de Software', (SELECT id_facultad FROM facultad WHERE nombre = 'Facultad de Ingeniería y Tecnologías'), 'posgrado'),
-('Maestría en Administración (MBA)', (SELECT id_facultad FROM facultad WHERE nombre = 'Facultad de Ciencias Empresariales'), 'posgrado'),
-('Especialización en Neuropsicología', (SELECT id_facultad FROM facultad WHERE nombre = 'Facultad de Psicología y Bienestar Humano'), 'posgrado');
-
+('Maestría en Ingeniería de Software', (SELECT id_facultad FROM facultad WHERE nombre = 'Facultad de Ingeniería y Tecnologías'), 'postgrado'),
+('Maestría en Administración (MBA)', (SELECT id_facultad FROM facultad WHERE nombre = 'Facultad de Ciencias Empresariales'), 'postgrado'),
+('Especialización en Neuropsicología', (SELECT id_facultad FROM facultad WHERE nombre = 'Facultad de Psicología y Bienestar Humano'), 'postgrado');
 
 /*Participante Programa Académico*/
 INSERT INTO obligatorio.participante_programa_academico (ci_participante, id_programa, rol)
@@ -83,7 +83,7 @@ VALUES
 ('TI3', (SELECT id_edificio FROM edificio WHERE nombre_edificio='Edificio Sacré Coeur'), 50, 'libre'),
 ('Sala del silencio', (SELECT id_edificio FROM edificio WHERE nombre_edificio='Edificio San Ignacio'), 5, 'libre'),
 ('Sala de docentes', (SELECT id_edificio FROM edificio WHERE nombre_edificio='Edificio San José'), 20, 'docente'),
-('Sala de posgrados', (SELECT id_edificio FROM edificio WHERE nombre_edificio='Edificio Madre Marta'), 40, 'posgrado'),
+('Sala de postgrados', (SELECT id_edificio FROM edificio WHERE nombre_edificio='Edificio Madre Marta'), 40, 'posgrado'),
 ('Sala de grabación', (SELECT id_edificio FROM edificio WHERE nombre_edificio='Edificio Athanasius'), 40, 'libre');
 
 /*Turnos*/

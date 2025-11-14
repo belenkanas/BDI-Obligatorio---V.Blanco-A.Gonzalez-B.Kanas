@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services.participante_service import (listar_participantes, obtener_participante, agregar_participante, eliminar_participante)
+from app.services.participante_service import (listar_participantes, obtener_participante, agregar_participante, eliminar_participante)
 
 participante_bp = Blueprint('participante', __name__)
 

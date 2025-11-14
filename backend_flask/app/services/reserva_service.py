@@ -1,6 +1,12 @@
+<<<<<<< HEAD:backend_flask/src/services/reserva_service.py
 from backend_flask.src.database.conexion_db import conexion
 from datetime import datetime, timedelta
 from services.sancion_participante_service import sancionar_participantes_sin_asistencia
+=======
+from app.database.conexion_db import conexion
+from datetime import datetime, timedelta
+from app.services.sancion_participante_service import sancionar_participantes_sin_asistencia
+>>>>>>> 0f41fcacfd9edfbb6bb53766061c2c1037d5f104:backend_flask/app/services/reserva_service.py
 
 
 def listar_reservas():

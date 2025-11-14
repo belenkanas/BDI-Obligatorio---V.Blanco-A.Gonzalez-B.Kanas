@@ -1,4 +1,8 @@
+<<<<<<< HEAD:backend_flask/src/services/reserva_participante_service.py
 from backend_flask.src.database.conexion_db import conexion
+=======
+from app.database.conexion_db import conexion
+>>>>>>> 0f41fcacfd9edfbb6bb53766061c2c1037d5f104:backend_flask/app/services/reserva_participante_service.py
 from datetime import datetime
 
 

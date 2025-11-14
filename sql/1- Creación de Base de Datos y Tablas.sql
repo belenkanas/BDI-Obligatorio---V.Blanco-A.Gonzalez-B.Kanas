@@ -76,7 +76,7 @@ CREATE TABLE turno(
 CREATE TABLE reserva(
   id_reserva INT AUTO_INCREMENT,
   id_sala INT NOT NULL,
-  fecha DATE NOT NULL,
+  fecha DATE NOT NULL, #El turno ya está indicado en su respectiva tabla
   id_turno INT NOT NULL,
   estado ENUM('activa', 'cancelada', 'sin_asistencia', 'finalizada') NOT NULL,
   PRIMARY KEY (id_reserva),

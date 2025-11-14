@@ -1,4 +1,5 @@
 import mysql.connector
+<<<<<<< HEAD:backend_flask/src/database/conexion_db.py
 import json
 import os
 
@@ -16,6 +17,19 @@ def conexion():
         database=config["DB_NAME"]
     )
 
+=======
+import os
+
+def conexion():
+    return mysql.connector.connect(
+        user=os.environ.get("DB_USER"),
+        password=os.environ.get("DB_PASSWORD"),
+        host=os.environ.get("DB_HOST"),
+        database=os.environ.get("DB_NAME")
+    )
+
+
+>>>>>>> 0f41fcacfd9edfbb6bb53766061c2c1037d5f104:backend_flask/app/database/conexion_db.py
 #Funciones según las consultas iniciales en SQL
 def listar_participantes():
   cnx = conexion()

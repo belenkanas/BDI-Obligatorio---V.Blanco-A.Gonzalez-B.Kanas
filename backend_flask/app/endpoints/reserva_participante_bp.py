@@ -1,5 +1,9 @@
 from flask import Blueprint, request, jsonify
+<<<<<<< HEAD:backend_flask/src/endpoints/reserva_participante_bp.py
 from services.reserva_participante_service import (
+=======
+from app.services.reserva_participante_service import (
+>>>>>>> 0f41fcacfd9edfbb6bb53766061c2c1037d5f104:backend_flask/app/endpoints/reserva_participante_bp.py
     listar_reservas_participantes,
     obtener_participantes_por_reserva,
     crear_reserva_participante,
