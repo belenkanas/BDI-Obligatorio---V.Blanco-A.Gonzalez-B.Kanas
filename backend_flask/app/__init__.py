@@ -29,6 +29,15 @@ def create_app():
     app.register_blueprint(reserva_participante_bp)
     app.register_blueprint(sanciones_bp)
 
+    #Ruta raiz
+    @app.route("/")
+    def home():
+        return {
+            "mensaje": "API del obligatorio funcionando 🎉",
+            "estado": "ok"
+        }
+    
+    #Manejo de errores
     @app.errorhandler(404)
     def not_found(e):
         return jsonify({"error": "Ruta no encontrada"}), 404
