@@ -73,7 +73,7 @@ def registrar_asistencias_reserva(id_reserva):
 # Listar reservas detalladas con filtros opcionales
 @reserva_bp.route('/reservas/detalladas', methods=['GET'])
 def obtener_reservas_con_filtro():
-    from services.reserva_service import listar_reservas_con_asistencias_filtro
+    from app.services.reserva_service import listar_reservas_con_asistencias_filtro
     estado = request.args.get("estado")
     fecha_desde = request.args.get("fecha_desde")
     fecha_hasta = request.args.get("fecha_hasta")
