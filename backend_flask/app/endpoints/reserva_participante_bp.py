@@ -9,18 +9,19 @@ from app.services.reserva_participante_service import (
 
 reserva_participante_bp = Blueprint('reserva_participante', __name__)
 
+#Listar todos los datos
 @reserva_participante_bp.route('/reservas-participantes', methods=['GET'])
 def listar_todos():
     registros = listar_reservas_participantes()
     return jsonify(registros), 200
 
-
+#Listar por reserva
 @reserva_participante_bp.route('/reservas/<int:id_reserva>/participantes', methods=['GET'])
 def obtener_por_reserva(id_reserva):
     participantes = obtener_participantes_por_reserva(id_reserva)
     return jsonify(participantes), 200
 
-
+#Crear relacion
 @reserva_participante_bp.route('/reservas/<int:id_reserva>/participantes', methods=['POST'])
 def crear(id_reserva):
     data = request.get_json()
@@ -32,7 +33,7 @@ def crear(id_reserva):
         return jsonify({"mensaje": mensaje, "registro": registro}), 201
     return jsonify({"mensaje": mensaje}), 400
 
-
+#Actualizar asistencia
 @reserva_participante_bp.route('/reservas/<int:id_reserva>/participantes/<string:ci_participante>/asistencia', methods=['PUT'])
 def actualizar_asistencia_participante(id_reserva, ci_participante):
     data = request.get_json()
@@ -43,7 +44,7 @@ def actualizar_asistencia_participante(id_reserva, ci_participante):
         return jsonify({"mensaje": mensaje, "registro": resultado}), 200
     return jsonify({"mensaje": mensaje}), 404
 
-
+#Eliminar relación de reserva-participante
 @reserva_participante_bp.route('/reservas/<int:id_reserva>/participantes/<string:ci_participante>', methods=['DELETE'])
 def eliminar(id_reserva, ci_participante):
     exito = eliminar_reserva_participante(ci_participante, id_reserva)
