@@ -110,6 +110,7 @@ backend_flask/
 ### Backend
 + Python
 + Flask (Uso de Blueprints, JSON Provider, CORS)
++ Uso de Postman para la prueba de Endpoints
 ### Base de Datos
 + MySQL (Modelo relacional normalizado)
 + Scripts SQL incluidos en /sql
@@ -263,7 +264,9 @@ A continuación se detallan todos los endpoints expuestos por la API REST, organ
 - Consultas SQL (simulando reportes y casos de uso)
 - Dockerfile + Docker Compose  
 - Instructivo completo para correr la aplicación de forma local 
-- Documentación formal del proyecto + Bitácora 
+- Documentación formal del proyecto + Bitácora
+-  [Link a Workspace de Postman](https://mariabelenkanas.postman.co/workspace/ca3bb8cf-33a5-41fe-82f6-3788387c0468) 
+
 
 ---
 
