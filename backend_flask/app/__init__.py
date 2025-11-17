@@ -11,9 +11,20 @@ from app.endpoints import (
     sanciones_bp,
 )
 import logging
+import json
+from datetime import date, datetime, time, timedelta
 
 def create_app():
     app = Flask(__name__)
+
+    class CustomJSONProvider(app.json.__class__):
+        def default(self, obj):
+            if isinstance(obj, (date, datetime, time, timedelta)):
+                return str(obj)
+            return super().default(obj)
+
+
+    app.json = CustomJSONProvider(app)
 
     app.config["JSON_AS_ASCII"] = False
     app.config["JSON_SORT_KEYS"] = False

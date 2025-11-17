@@ -4,20 +4,32 @@ from app.services.sancion_participante_service import sancionar_participantes_si
 
 
 def listar_reservas():
-    conection = conexion()
-    cursor = conection.cursor(dictionary=True)
+    con = conexion()
+    cursor = con.cursor(dictionary=True)
+
     cursor.execute("""
-        SELECT r.id_reserva, r.fecha, r.estado,
-               s.nombre_sala, t.hora_inicio, t.hora_fin
+        SELECT 
+            r.id_reserva,
+            r.fecha,
+            r.estado,
+            s.nombre_sala,
+            t.hora_inicio,
+            t.hora_fin
         FROM reserva r
         JOIN sala s ON r.id_sala = s.id_sala
         JOIN turno t ON r.id_turno = t.id_turno
         ORDER BY r.fecha DESC, t.hora_inicio
     """)
-    reservas = cursor.fetchall()
-    conection.close()
-    return reservas
 
+    reservas = cursor.fetchall()
+    con.close()
+
+    print("\n\n########### DEBUG RESERVAS ###########")
+    for r in reservas:
+        print({k: (str(v), type(v)) for k, v in r.items()})
+    print("######################################\n\n")
+
+    return reservas
 
 def obtener_reserva(id_reserva):
     conn = conexion()
