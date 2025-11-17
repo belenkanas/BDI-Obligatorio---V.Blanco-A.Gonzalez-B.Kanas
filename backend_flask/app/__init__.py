@@ -12,8 +12,7 @@ from app.endpoints import (
     edificio_bp,
     facultad_bp,
     sala_bp,
-    turno_bp
-
+    turno_bp,
 )
 import logging
 import json
