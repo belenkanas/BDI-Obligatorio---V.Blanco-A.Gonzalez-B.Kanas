@@ -1,7 +1,6 @@
-"""
-Este script une lo ya hecho en Creacion de Base e Inserción Tablas.
-La idea es que se corra como script cuando se levante el contenedor
-"""
+--Este script une lo ya hecho en Creacion de Base e Inserción Tablas.
+--La idea es que se corra como script cuando se levante el contenedor
+
 DROP DATABASE IF EXISTS obligatorio;
 CREATE DATABASE obligatorio CHARACTER SET utf8 COLLATE utf8_spanish_ci;
 USE obligatorio;
