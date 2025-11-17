@@ -32,10 +32,10 @@ def create_app():
     #Ruta raiz
     @app.route("/")
     def home():
-        return {
-            "mensaje": "API del obligatorio funcionando 🎉",
+        return jsonify( {
+            "mensaje": "API del obligatorio funcionando",
             "estado": "ok"
-        }
+        })
     
     #Manejo de errores
     @app.errorhandler(404)
