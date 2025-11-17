@@ -19,4 +19,8 @@ __all__ = [
     "reserva_bp",
     "reserva_participante_bp",
     "sanciones_bp",
+    "edificio_bp",
+    "facultad_bp",
+    "sala_bp",
+    "turno_bp"
 ]
