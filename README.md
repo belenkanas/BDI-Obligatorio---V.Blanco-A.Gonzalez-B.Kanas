@@ -6,95 +6,264 @@
 
 ## 📘 Sistema para la Gestión de Reserva de Salas de Estudio
 
-El objetivo del trabajo obligatorio es diseñar e implementar un **sistema de información** para la gestión de las **salas de estudio** de la Universidad Católica del Uruguay (UCU).  
-El sistema permite la **reserva**, **control de asistencia** y **generación de reportes**, apoyando la gestión académica y la toma de decisiones institucionales.
-
----
-
-## ⚙️ Inicio de aplicación
-
-Para poder correr la aplicación (en conjunto con la base de datos):
-
-➡️Correr el dockercompose
-
+El objetivo central del trabajo obligatorio es diseñar, modelar e implementar un sistema que permita digitalizar el proceso de reserva, control de asistencia y administración de salas utilizado en los distintos edificios de la Universidad Católica del Uruguay, reemplazando los registros manuales en papel actualmente empleados en biblioteca, secretaría y administración.
 
 ---
 
 ## 🏫 Descripción General
 
-Las *Salas de Estudio* son espacios utilizados por estudiantes y docentes para diversas actividades:  
-- Reuniones de grupo  
-- Videoconferencias  
-- Actividades académicas 
+El sistema implementado permite:
 
-Actualmente, las reservas se registran manualmente en planillas de papel.  
-El sistema propuesto busca **unificar y digitalizar** este proceso, facilitando el control, la trazabilidad y el uso equilibrado de las salas en todos los edificios de la universidad.
++ Registrar y gestionar salas, edificios, programas académicos, turnos y usuarios.
++ Realizar, modificar y cancelar reservas.
++ Controlar automáticamente reglas de uso (horarios, capacidades, restricciones diarias y semanales)
++ Registrar asistencia de participantes por reserva
++ Generar sanciones automáticas cuando se incumplen determinadas condiciones de uso
++ Proveer endpoint REST para su consumo desde un cliente móvil o web.
 
+### Modelado y Reglas del Sistema
+El sistema implementa las reglas definidas en la consigna:
+
++ Horario disponible: 08:00 a 23:00
++ Reservas por bloques de 1 hora
++ Límite de 2 horas diarias por usuario
++ Límite de 3 reservas activas por semana
++ Excepciones para docentes y estudiantes de posgrado al utilizar salas exclusivas
++ Control de asistencia por participante
++ Generación automática de sanciones por inasistencia
+
+La arquitectura está organizada en torno a **tres capas principales**:
+
+1. **Capa de Base de Datos (MySQL)**:
+Contiene el modelo relacional, con claves primarias, relaciones referenciales consistentes y restricciones necesarias.
+2. **Capa de Backend (Flask - Python)**:
+Implementa la lógica de los endpoints, validaciones necesarias y servicios.
+3. **Contenedor Docker**:
+Permite la ejecución aislada del backend y base de datos
 ---
 
-## 🕒 Reglas de Reserva
-
-- Los turnos comienzan a las **08:00** y finalizan a las **23:00**.  
-- Las reservas se realizan **por bloques de 1 hora**.  
-  > Ejemplo: para reservar de 08:30 a 10:00, se deben solicitar los bloques 08:00–09:00 y 09:00–10:00.
-- Las salas tienen una **capacidad máxima** que no puede ser excedida.  
-- Cada reserva incluye los **participantes** (alumnos y/o docentes) que ocuparán la sala.  
-
----
-
-## 👥 Tipos de Usuarios y Salas
-
-### Usuarios
-- **Estudiantes de grado**
-- **Estudiantes de posgrado**
-- **Docentes**
-
-### Tipos de Salas
-1. **Uso libre** → pueden reservarlas estudiantes de grado, posgrado y docentes.  
-2. **Exclusivas de posgrado** → solo para estudiantes de posgrado y docentes.  
-3. **Exclusivas de docentes** → uso restringido a docentes.
-
----
-
-## ⏳ Restricciones de Uso
-
-- Un **usuario no puede ocupar más de 2 horas diarias** en cualquiera de los edificios.  
-- Un **usuario no puede tener más de 3 reservas activas por semana**.  
-- **Docentes** y **estudiantes de posgrado** **no tienen estas limitaciones** cuando usan salas exclusivas para ellos.
-
----
-
-## ✅ Control de Asistencia
-
-- El sistema registrará la **asistencia de cada participante**.  
-- Si **ningún participante asiste** en el día y horario de la reserva, los involucrados serán **notificados y sancionados**.  
-- La sanción consiste en **2 meses sin poder realizar reservas**.
-
----
-
-## 📊 Funcionalidades Principales
-
-- Gestión de usuarios y tipos de salas  
-- Creación, modificación y cancelación de reservas  
-- Registro de asistencia por reserva  
-- Control de restricciones y sanciones  
-
+## 📁 Estructura del Proyecto Backend
+```
+backend_flask/
+│
+├── app/
+│   │
+│   ├── database/
+│   │   ├── __init__.py
+│   │   └── conexion_db.py
+│   │
+│   ├── endpoints/
+│   │   ├── __init__.py
+│   │   ├── edificio_bp.py
+│   │   ├── facultad_bp.py
+│   │   ├── login_bp.py
+│   │   ├── participante_bp.py
+│   │   ├── participante_programa_academico_bp.py
+│   │   ├── programa_academico_bp.py
+│   │   ├── reserva_bp.py
+│   │   ├── reserva_participante_bp.py
+│   │   ├── sala_bp.py
+│   │   ├── sancion_participante_bp.py
+│   │   └── turno_bp.py
+│   │
+│   ├── services/
+│   │   ├── __init__.py
+│   │   ├── edificio_service.py
+│   │   ├── facultad_service.py
+│   │   ├── login_service.py
+│   │   ├── participante_service.py
+│   │   ├── participante_programa_academico_service.py
+│   │   ├── programa_academico_service.py
+│   │   ├── reserva_service.py
+│   │   ├── reserva_participante_service.py
+│   │   ├── sala_service.py
+│   │   ├── sancion_participante_service.py
+│   │   └── turno_service.py
+│   │
+│   ├── __init__.py           # configuración de la aplicación Flask
+│   └── __main__.py           # punto de entrada principal: `python -m app`
+│
+├── Dockerfile
+├── requirements.txt
+│
+├── documentacion/           # archivos del informe y material de apoyo
+│   ├── TrabajoObligatorio-V.Blanco,A.Gonzalez,B.Kanas.pdf
+│   └── Bitacora.pdf
+│
+├── sql/
+│   ├── 1- Creación de Base de Datos y Tablas.sql
+│   ├── 2- Inserción Tablas.sql
+│   ├── 3- Consultas.sql
+│   └── schema.sql
+│
+├── .env
+├── .gitignore
+├── config_local.json
+├── docker-compose-obligatorio.yml
+├── package-lock.json
+└── README.md
+```
 ---
 
 ## 🛠️ Tecnologías Utilizadas
 
-- **Lenguaje:** SQL / MySQL
-- **Herramientas de Backend:** Python    
+### Backend
++ Python
++ Flask (Uso de Blueprints, JSON Provider, CORS)
+### Base de Datos
++ MySQL (Modelo relacional normalizado)
++ Scripts SQL incluidos en /sql
+### Infraestructura
++ Docker (Con Docker Desktop como herramienta)
++ Variables de entorno mediante `.env`
+
+---
+## Variables de Entorno (.env)
+El archivo `.env` debe contener los datos de conexión a MySQL:
+
+```
+# Credenciales de base de datos
+MYSQL_ROOT_PASSWORD=rootpassword
+MYSQL_DATABASE=obligatorio
+MYSQL_USER=admin
+MYSQL_PASSWORD=admin123
+```
+---
+
+## 🛠 Instalación y Ejecución
+
+### Construcción y levantamiento del proyecto con Docker
+
+1. Desde la raiz del repositorio, ejecutar:
+```
+docker compose -f docker-compose-obligatorio.yml up --build
+```
+Esto levanta el contenedor **MySQL** y el **Flask Backend**
+
+2. Instalación manual (opcional, fuera de Docker) 
+
+**Instalar dependencias**:
+```
+pip install -r requirements.txt
+```
+**Ejecutar backend**:
+```
+python -m app
+```
+### Establecer conexión del modelo en DataGrip
+Teniendo en cuenta los datos envueltos en `.env`, completar los campos siguiendo la imagen:
+
+![Conexión DataGrip](image.png)
+
+--- 
+
+## 📊 Endpoints Disponibles
+
+A continuación se detallan todos los endpoints expuestos por la API REST, organizados por módulo, incluyendo ruta, método HTTP y descripción.
+
+### 🏢 Edificios (_edificio_bp_)
+| Método     | URL                            | Descripción                    |
+| ---------- | ------------------------------ | ------------------------------ |
+| **GET**    | `/edificios`                   | Listar todos los edificios     |
+| **GET**    | `/edificios/<nombre_edificio>` | Obtener un edificio específico |
+| **POST**   | `/edificios`                   | Crear un edificio              |
+| **DELETE** | `/edificios/<nombre_edificio>` | Eliminar un edificio           |
+
+### 🏛 Facultades (_facultad_bp_)
+
+| Método     | URL                         | Descripción                 |
+| ---------- | --------------------------- | --------------------------- |
+| **GET**    | `/facultades`               | Listar todas las facultades |
+| **GET**    | `/facultades/<id_facultad>` | Obtener una facultad por ID |
+| **POST**   | `/facultades`               | Crear facultad              |
+| **DELETE** | `/facultades/<id_facultad>` | Eliminar facultad           |
+
+### 🔐 Auth / Login (_login_bp_)
+| Método   | URL         | Descripción       |
+| -------- | ----------- | ----------------- |
+| **POST** | `/login`    | Iniciar sesión    |
+| **POST** | `/register` | Registrar usuario |
+
+### 👥 Participantes (_participante_bp_)
+| Método     | URL                   | Descripción                    |
+| ---------- | --------------------- | ------------------------------ |
+| **GET**    | `/participantes`      | Listar todos los participantes |
+| **GET**    | `/participantes/<ci>` | Obtener participante por CI    |
+| **POST**   | `/participantes`      | Crear participante             |
+| **DELETE** | `/participantes/<ci>` | Eliminar participante          |
+
+### 🎓 Participante ↔ Programa Académico (_participante_programa_academico_bp_)
+| Método     | URL                                      | Descripción                             |
+| ---------- | ---------------------------------------- | --------------------------------------- |
+| **GET**    | `/participantes_programa_academico`      | Listar relaciones participante–programa |
+| **GET**    | `/participantes_programa_academico/<id>` | Obtener relación por ID                 |
+| **POST**   | `/participantes_programa_academico`      | Crear relación                          |
+| **DELETE** | `/participantes_programa_academico/<id>` | Eliminar relación                       |
+
+### 📚 Programas Académicos (_programa_academico_bp_)
+| Método     | URL               | Descripción       |
+| ---------- | ----------------- | ----------------- |
+| **GET**    | `/programas`      | Listar programas  |
+| **GET**    | `/programas/<id>` | Obtener programa  |
+| **POST**   | `/programas`      | Crear programa    |
+| **DELETE** | `/programas/<id>` | Eliminar programa |
+
+### 📅 Reservas (_reserva_bp_)
+| Método   | URL                                  | Descripción                     |
+| -------- | ------------------------------------ | ------------------------------- |
+| **GET**  | `/reservas`                          | Listar todas las reservas       |
+| **GET**  | `/reservas/<id_reserva>`             | Obtener una reserva             |
+| **POST** | `/reservas`                          | Crear reserva                   |
+| **PUT**  | `/reservas/<id_reserva>/estado`      | Actualizar estado de la reserva |
+| **PUT**  | `/reservas/<id_reserva>/asistencias` | Registrar asistencias           |
+| **GET**  | `/reservas/detalladas`               | Listado detallado con filtros   |
+| **PUT**  | `/reservas/<id_reserva>/cancelar`    | Cancelar reserva                |
+
+### 👥📅 Relación Reserva–Participante (_reserva_participante_bp_)
+| Método     | URL                                            | Descripción                         |
+| ---------- | ---------------------------------------------- | ----------------------------------- |
+| **GET**    | `/reservas-participantes`                      | Listar todas las relaciones         |
+| **GET**    | `/reservas/<id_reserva>/participantes`         | Listar participantes de una reserva |
+| **POST**   | `/reservas/<id_reserva>/participantes`         | Agregar participante a reserva      |
+| **PUT**    | `/reservas/<id>/participantes/<ci>/asistencia` | Actualizar asistencia individual    |
+| **DELETE** | `/reservas/<id>/participantes/<ci>`            | Eliminar participante de la reserva |
+
+### 🏫 Salas (_sala_bp_)
+| Método     | URL                    | Descripción   |
+| ---------- | ---------------------- | ------------- |
+| **GET**    | `/salas`               | Listar salas  |
+| **GET**    | `/salas/<nombre_sala>` | Obtener sala  |
+| **POST**   | `/salas`               | Crear sala    |
+| **DELETE** | `/salas/<nombre_sala>` | Eliminar sala |
+
+### 🚫 Sanciones (_sanciones_bp_)
+| Método   | URL                                     | Descripción                               |
+| -------- | --------------------------------------- | ----------------------------------------- |
+| **GET**  | `/sanciones`                            | Listar sanciones                          |
+| **GET**  | `/sanciones/activas`                    | Listar sanciones activas                  |
+| **GET**  | `/sanciones/<ci>`                       | Sanciones de un participante              |
+| **GET**  | `/sanciones/por-rol-tipo`               | Estadísticas por rol y tipo de sala       |
+| **GET**  | `/sanciones/participantes-canceladores` | Participantes con más cancelaciones       |
+| **POST** | `/sanciones`                            | Crear sanción manual                      |
+| **POST** | `/sanciones/automatica/<id_reserva>`    | Crear sanción automática por inasistencia |
+
+### ⏰ Turnos (_turno_bp_)
+| Método     | URL            | Descripción    |
+| ---------- | -------------- | -------------- |
+| **GET**    | `/turnos`      | Listar turnos  |
+| **GET**    | `/turnos/<id>` | Obtener turno  |
+| **POST**   | `/turnos`      | Crear turno    |
+| **DELETE** | `/turnos/<id>` | Eliminar turno |
 
 ---
 
-## 🧩 Entregables
+## 🧩 Entregables Incluidos
  
-- Script de creación de tablas  
-- Script de inserción de datos de prueba  
-- Consultas SQL (simulando reportes y casos de uso)  
+- Script SQL completos (Creación de tablas e inserción de datos) 
+- Consultas SQL (simulando reportes y casos de uso)
+- Dockerfile + Docker Compose  
 - Instructivo completo para correr la aplicación de forma local 
-- Documento con explicaciones y decisiones de diseño  
+- Documentación formal del proyecto + Bitácora 
 
 ---
 
