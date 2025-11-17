@@ -17,7 +17,7 @@ CREATE TABLE participante(
   ci VARCHAR(8) NOT NULL,
   nombre VARCHAR(50) NOT NULL,
   apellido VARCHAR(50) NOT NULL,
-  email VARCHAR(255) NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
   PRIMARY KEY (ci),
   FOREIGN KEY (email) REFERENCES login(correo)
 );
@@ -32,9 +32,10 @@ CREATE TABLE programa_academico(
   id_programa INT AUTO_INCREMENT,
   nombre_programa VARCHAR(50) NOT NULL,
   id_facultad INT NOT NULL,
-  tipo ENUM('grado', 'postgrado') NOT NULL,
+  tipo ENUM('grado', 'posgrado') NOT NULL,
   PRIMARY KEY (id_programa),
-  FOREIGN KEY (id_facultad) REFERENCES facultad(id_facultad)
+  FOREIGN KEY (id_facultad) REFERENCES facultad(id_facultad),
+  UNIQUE (nombre_programa, id_facultad)
 );
 
 CREATE TABLE participante_programa_academico(
@@ -62,7 +63,8 @@ CREATE TABLE sala(
   capacidad INT NOT NULL,
   tipo_sala ENUM('libre', 'posgrado', 'docente') NOT NULL,
   PRIMARY KEY (id_sala),
-  FOREIGN KEY (id_edificio) REFERENCES edificio(id_edificio)
+  FOREIGN KEY (id_edificio) REFERENCES edificio(id_edificio),
+  UNIQUE (nombre_sala, id_edificio)
 );
 
 CREATE TABLE turno(
@@ -77,7 +79,7 @@ CREATE TABLE reserva(
   id_sala INT NOT NULL,
   fecha DATE NOT NULL,
   id_turno INT NOT NULL,
-  estado ENUM('activa', 'cancelada', 'sin asistencia', 'finalizada') NOT NULL,
+  estado ENUM('activa', 'cancelada', 'sin_asistencia', 'finalizada') NOT NULL,
   PRIMARY KEY (id_reserva),
   FOREIGN KEY (id_sala) REFERENCES sala(id_sala),
   FOREIGN KEY (id_turno) REFERENCES turno(id_turno)
@@ -87,17 +89,18 @@ CREATE TABLE reserva_participante(
   ci_participante VARCHAR(8) NOT NULL,
   id_reserva INT NOT NULL,
   fecha_solicitud_reserva DATETIME NOT NULL,
-  asistencia BOOLEAN,
+  asistencia BOOLEAN DEFAULT FALSE,
   PRIMARY KEY (ci_participante, id_reserva),
   FOREIGN KEY (ci_participante) REFERENCES participante(ci),
   FOREIGN KEY (id_reserva) REFERENCES reserva(id_reserva)
 );
 
 CREATE TABLE sancion_participante(
+  id_sancion INT AUTO_INCREMENT,
   ci_participante VARCHAR(8) NOT NULL,
-  fecha_inicio DATETIME NOT NULL,
-  fecha_fin DATETIME NOT NULL,
-  PRIMARY KEY (ci_participante, fecha_inicio, fecha_fin),
+  fecha_inicio DATE NOT NULL,
+  fecha_fin DATE NOT NULL,
+  PRIMARY KEY (id_sancion),
   FOREIGN KEY (ci_participante) REFERENCES participante(ci)
 );
 
@@ -146,9 +149,9 @@ VALUES
 ('Psicología Clínica', 6, 'grado'),
 ('Derecho', 2, 'grado'),
 ('Licenciatura en Comunicación', 5, 'grado'),
-('Maestría en Ingeniería de Software', 3, 'postgrado'),
-('Maestría en Administración (MBA)', 1, 'postgrado'),
-('Especialización en Neuropsicología', 6, 'postgrado');
+('Maestría en Ingeniería de Software', 3, 'posgrado'),
+('Maestría en Administración (MBA)', 1, 'posgrado'),
+('Especialización en Neuropsicología', 6, 'posgrado');
 
 -- PARTICIPANTE_PROGRAMA
 INSERT INTO participante_programa_academico (ci_participante, id_programa, rol)
@@ -210,7 +213,7 @@ INSERT INTO reserva (id_sala, fecha, id_turno, estado) VALUES
 (2, '2025-10-28', 4, 'finalizada'),
 (4, '2025-10-29', 6, 'cancelada'),
 (6, '2025-10-29', 8, 'activa'),
-(8, '2025-10-30', 10, 'sin asistencia');
+(8, '2025-10-30', 10, 'sin_asistencia');
 
 -- RESERVA_PARTICIPANTE
 INSERT INTO reserva_participante (ci_participante, id_reserva, fecha_solicitud_reserva, asistencia) VALUES
@@ -222,8 +225,8 @@ INSERT INTO reserva_participante (ci_participante, id_reserva, fecha_solicitud_r
 
 -- SANCIONES
 INSERT INTO sancion_participante (ci_participante, fecha_inicio, fecha_fin) VALUES
-('55788998', '2025-10-27 00:00:00', '2025-11-03 00:00:00'),
-('58902345', '2025-10-30 00:00:00', '2025-11-06 00:00:00'),
-('57876550', '2025-09-15 00:00:00', '2025-09-22 00:00:00'),
-('57541231', '2025-10-10 00:00:00', '2025-10-17 00:00:00'),
-('53234567', '2025-10-20 00:00:00', '2025-10-27 00:00:00');
+('55788998', '2025-10-27', '2025-11-03'),
+('58902345', '2025-10-30', '2025-11-06'),
+('57876550', '2025-09-15', '2025-09-22'),
+('57541231', '2025-10-10', '2025-10-17'),
+('53234567', '2025-10-20', '2025-10-27');
