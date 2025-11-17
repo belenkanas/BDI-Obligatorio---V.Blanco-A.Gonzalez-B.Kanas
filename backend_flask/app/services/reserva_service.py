@@ -24,11 +24,6 @@ def listar_reservas():
     reservas = cursor.fetchall()
     con.close()
 
-    print("\n\n########### DEBUG RESERVAS ###########")
-    for r in reservas:
-        print({k: (str(v), type(v)) for k, v in r.items()})
-    print("######################################\n\n")
-
     return reservas
 
 def obtener_reserva(id_reserva):
