@@ -10,6 +10,11 @@ from .participante_programa_academico_bp import participante_programa_academico_
 from .reserva_bp import reserva_bp
 from .reserva_participante_bp import reserva_participante_bp
 from .sancion_participante_bp import sanciones_bp
+from .edificio_bp import edificio_bp
+from .facultad_bp import facultad_bp
+from .sala_bp import sala_bp
+from .turno_bp import turno_bp
+
 
 __all__ = [
     "login_bp",
