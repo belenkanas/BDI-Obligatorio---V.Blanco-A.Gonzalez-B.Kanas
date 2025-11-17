@@ -69,7 +69,7 @@ SELECT ((SELECT COUNT(*)
          WHERE r.estado = 'activa' OR r.estado = 'finalizada') / (SELECT COUNT(*) FROM obligatorio.reserva) * 100) AS porcentaje_utilizadas,
         ((SELECT COUNT(*)
           FROM obligatorio.reserva r
-          WHERE r.estado = 'cancelada' OR r.estado = 'sin asistencia') / (SELECT COUNT(*) FROM obligatorio.reserva) * 100) AS porcentaje_canceladas;
+          WHERE r.estado = 'cancelada' OR r.estado = 'sin_asistencia') / (SELECT COUNT(*) FROM obligatorio.reserva) * 100) AS porcentaje_canceladas;
 
 /*     Agregadas    */
 
@@ -82,7 +82,7 @@ WHERE r.id_reserva IS NULL
 ORDER BY e.nombre_edificio, s.nombre_sala;
 
 /*    Participantes que más cancelan(se podrían aplicar sanciones más severas) */
-SELECT rp.ci_participante, COUNT(*) AS reservas_totales, SUM(r.estado IN ('cancelada','sin asistencia')) AS no_efectivas, ROUND(100 * SUM(r.estado IN ('cancelada','sin asistencia')) / COUNT(*), 1) AS cuanta_cancelacion
+SELECT rp.ci_participante, COUNT(*) AS reservas_totales, SUM(r.estado IN ('cancelada','sin_asistencia')) AS no_efectivas, ROUND(100 * SUM(r.estado IN ('cancelada','sin_asistencia')) / COUNT(*), 1) AS cuanta_cancelacion
 FROM obligatorio.reserva r
 JOIN obligatorio.reserva_participante rp ON rp.id_reserva = r.id_reserva
 GROUP BY rp.ci_participante
