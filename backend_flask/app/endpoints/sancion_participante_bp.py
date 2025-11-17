@@ -50,6 +50,8 @@ def crear_nueva_sancion():
         return jsonify({"mensaje": mensaje, "sancion": sancion}), 201
     return jsonify({"mensaje": mensaje}), 400
 
+
+#Creación de sancion automática
 @sanciones_bp.route('/sanciones/automatica/<int:id_reserva>', methods=['POST'])
 def sancionar_reserva_sin_asistencia(id_reserva):
     resultado, mensaje = sancionar_participantes_sin_asistencia(id_reserva)
