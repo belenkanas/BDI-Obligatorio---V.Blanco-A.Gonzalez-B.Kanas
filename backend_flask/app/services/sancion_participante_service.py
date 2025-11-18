@@ -84,10 +84,18 @@ def crear_sancion(ci_participante, fecha_inicio=None, fecha_fin=None):
     conn = conexion()
     cursor = conn.cursor(dictionary=True)
 
+    # Si llegan strings, convertir a datetime
+    if isinstance(fecha_inicio, str):
+        fecha_inicio = datetime.strptime(fecha_inicio, "%Y-%m-%d %H:%M:%S")
+
+    if isinstance(fecha_fin, str):
+        fecha_fin = datetime.strptime(fecha_fin, "%Y-%m-%d %H:%M:%S")
+
     if fecha_inicio is None:
         fecha_inicio = datetime.now()
 
-    #fecha_fin = fecha_inicio + timedelta(days=60)
+    if fecha_fin is None:
+        fecha_fin = fecha_inicio + timedelta(days=60)
 
     # Validar que el participante exista
     cursor.execute("SELECT ci FROM participante WHERE ci = %s", (ci_participante,))
@@ -100,6 +108,7 @@ def crear_sancion(ci_participante, fecha_inicio=None, fecha_fin=None):
         INSERT INTO sancion_participante (ci_participante, fecha_inicio, fecha_fin)
         VALUES (%s, %s, %s)
     """, (ci_participante, fecha_inicio, fecha_fin))
+    
     conn.commit()
     conn.close()
 
