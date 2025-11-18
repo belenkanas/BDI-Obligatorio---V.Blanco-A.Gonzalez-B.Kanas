@@ -14,6 +14,7 @@ from .edificio_bp import edificio_bp
 from .facultad_bp import facultad_bp
 from .sala_bp import sala_bp
 from .turno_bp import turno_bp
+from .reserva_reportes_bp import reserva_reportes_bp
 
 
 __all__ = [
@@ -27,5 +28,6 @@ __all__ = [
     "edificio_bp",
     "facultad_bp",
     "sala_bp",
-    "turno_bp"
+    "turno_bp",
+    "reserva_reportes_bp"
 ]
