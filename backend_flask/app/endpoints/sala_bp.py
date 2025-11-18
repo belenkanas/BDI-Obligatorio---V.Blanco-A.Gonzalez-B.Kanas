@@ -24,11 +24,11 @@ def crear_sala():
     data = request.get_json()
 
     nombre_sala = data.get('nombre_sala')
-    edificio = data.get('edificio')
+    id_edificio = data.get('id_edificio')
     capacidad = data.get('capacidad')
     tipo_sala = data.get('tipo_sala')
 
-    sala, mensaje = agregar_sala(nombre_sala, edificio, capacidad, tipo_sala)
+    sala, mensaje = agregar_sala(nombre_sala, id_edificio, capacidad, tipo_sala)
 
     if sala:
         return jsonify({"mensaje": mensaje, "sala": sala}), 201
