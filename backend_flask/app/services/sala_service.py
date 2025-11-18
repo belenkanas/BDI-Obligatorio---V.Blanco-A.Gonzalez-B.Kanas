@@ -12,11 +12,11 @@ def listar_salas():
     return salas
 
 
-def obtener_sala(nombre_sala):
+def obtener_sala(id_sala):
     conn = conexion()
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT * FROM sala WHERE nombre_sala = %s", (nombre_sala,))
+    cursor.execute("SELECT * FROM sala WHERE id_sala = %s", (id_sala,))
 
     sala = cursor.fetchone()
     conn.close()
@@ -51,11 +51,11 @@ def agregar_sala(nombre_sala, edificio, capacidad, tipo_sala):
     }, "Sala creada exitosamente"
 
 
-def eliminar_sala(nombre_sala):
+def eliminar_sala(id_sala):
     conn = conexion()
     cursor = conn.cursor()
 
-    cursor.execute("DELETE FROM sala WHERE nombre_sala = %s", (nombre_sala,))
+    cursor.execute("DELETE FROM sala WHERE id_sala = %s", (id_sala,))
 
     conn.commit()
     filas = cursor.rowcount

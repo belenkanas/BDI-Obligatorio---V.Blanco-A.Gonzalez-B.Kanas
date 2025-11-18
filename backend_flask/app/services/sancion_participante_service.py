@@ -80,14 +80,14 @@ def participantes_que_mas_cancelan():
     conn.close()
     return resultados
 
-def crear_sancion(ci_participante, fecha_inicio=None, meses=2):
+def crear_sancion(ci_participante, fecha_inicio=None, fecha_fin=None):
     conn = conexion()
     cursor = conn.cursor(dictionary=True)
 
     if fecha_inicio is None:
         fecha_inicio = datetime.now()
 
-    fecha_fin = fecha_inicio + timedelta(days=60)
+    #fecha_fin = fecha_inicio + timedelta(days=60)
 
     # Validar que el participante exista
     cursor.execute("SELECT ci FROM participante WHERE ci = %s", (ci_participante,))

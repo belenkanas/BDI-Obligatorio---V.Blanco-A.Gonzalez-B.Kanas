@@ -12,12 +12,12 @@ def listar_edificios():
     return edificios
 
 
-def obtener_edificio(nombre_edificio):
+def obtener_edificio(id_edificio):
     conn = conexion()
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT * FROM edificio WHERE nombre_edificio = %s",
-                   (nombre_edificio,))
+    cursor.execute("SELECT * FROM edificio WHERE id_edificio = %s",
+                   (id_edificio,))
 
     edificio = cursor.fetchone()
     conn.close()
@@ -51,12 +51,12 @@ def agregar_edificio(nombre_edificio, direccion, departamento):
     }, "Edificio creado exitosamente"
 
 
-def eliminar_edificio(nombre_edificio):
+def eliminar_edificio(id_edificio):
     conn = conexion()
     cursor = conn.cursor()
 
-    cursor.execute("DELETE FROM edificio WHERE nombre_edificio = %s",
-                   (nombre_edificio,))
+    cursor.execute("DELETE FROM edificio WHERE id_edificio = %s",
+                   (id_edificio,))
 
     conn.commit()
     filas = cursor.rowcount

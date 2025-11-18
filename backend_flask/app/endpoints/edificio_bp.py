@@ -11,9 +11,9 @@ def obtener_todos_edificios():
     return jsonify(edificios), 200
 
 
-@edificio_bp.route('/edificios/<nombre_edificio>', methods=['GET'])
-def obtener_un_edificio(nombre_edificio):
-    edificio = obtener_edificio(nombre_edificio)
+@edificio_bp.route('/edificios/<id_edificio>', methods=['GET'])
+def obtener_un_edificio(id_edificio):
+    edificio = obtener_edificio(id_edificio)
     if edificio:
         return jsonify(edificio), 200
     return jsonify({"mensaje": "Edificio no encontrado"}), 404
@@ -34,8 +34,8 @@ def crear_edificio():
     return jsonify({"mensaje": mensaje}), 400
 
 
-@edificio_bp.route('/edificios/<nombre_edificio>', methods=['DELETE'])
-def eliminar_edificio_endpoint(nombre_edificio):
-    if eliminar_edificio(nombre_edificio):
+@edificio_bp.route('/edificios/<id_edificio>', methods=['DELETE'])
+def eliminar_edificio_endpoint(id_edificio):
+    if eliminar_edificio(id_edificio):
         return jsonify({"mensaje": "Edificio eliminado exitosamente"}), 200
     return jsonify({"mensaje": "Edificio no encontrado"}), 404
