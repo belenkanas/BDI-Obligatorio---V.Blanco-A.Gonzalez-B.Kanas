@@ -24,28 +24,28 @@ def obtener_sala(id_sala):
     return sala
 
 
-def agregar_sala(nombre_sala, edificio, capacidad, tipo_sala):
+def agregar_sala(nombre_sala, id_edificio, capacidad, tipo_sala):
     conn = conexion()
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT * FROM sala WHERE nombre_sala = %s AND edificio = %s",
-                   (nombre_sala, edificio))
+    cursor.execute("SELECT * FROM sala WHERE nombre_sala = %s AND id_edificio = %s",
+                   (nombre_sala, id_edificio))
 
     if cursor.fetchone():
         conn.close()
         return None, "La sala ya existe en ese edificio"
 
     cursor.execute("""
-        INSERT INTO sala (nombre_sala, edificio, capacidad, tipo_sala)
+        INSERT INTO sala (nombre_sala, id_edificio, capacidad, tipo_sala)
         VALUES (%s, %s, %s, %s)
-    """, (nombre_sala, edificio, capacidad, tipo_sala))
+    """, (nombre_sala, id_edificio, capacidad, tipo_sala))
 
     conn.commit()
     conn.close()
 
     return {
         "nombre_sala": nombre_sala,
-        "edificio": edificio,
+        "id_edificio": id_edificio,
         "capacidad": capacidad,
         "tipo_sala": tipo_sala
     }, "Sala creada exitosamente"
