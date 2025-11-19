@@ -13,6 +13,7 @@ from app.endpoints import (
     facultad_bp,
     sala_bp,
     turno_bp,
+    reserva_reportes_bp
 )
 import logging
 import json
@@ -47,6 +48,7 @@ def create_app():
     app.register_blueprint(facultad_bp)
     app.register_blueprint(sala_bp)
     app.register_blueprint(turno_bp)
+    app.register_blueprint(reserva_reportes_bp)
 
     #Ruta raiz
     @app.route("/")
