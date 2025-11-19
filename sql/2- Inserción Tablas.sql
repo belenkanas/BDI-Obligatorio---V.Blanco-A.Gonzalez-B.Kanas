@@ -45,9 +45,9 @@ VALUES
 ('Psicología Clínica', (SELECT id_facultad FROM facultad WHERE nombre = 'Facultad de Psicología y Bienestar Humano'), 'grado'),
 ('Derecho', (SELECT id_facultad FROM facultad WHERE nombre = 'Facultad de Derecho y Ciencias Humanas'), 'grado'),
 ('Licenciatura en Comunicación', (SELECT id_facultad FROM facultad WHERE nombre = 'Facultad de Humanidades y Artes Liberales'), 'grado'),
-('Maestría en Ingeniería de Software', (SELECT id_facultad FROM facultad WHERE nombre = 'Facultad de Ingeniería y Tecnologías'), 'postgrado'),
-('Maestría en Administración (MBA)', (SELECT id_facultad FROM facultad WHERE nombre = 'Facultad de Ciencias Empresariales'), 'postgrado'),
-('Especialización en Neuropsicología', (SELECT id_facultad FROM facultad WHERE nombre = 'Facultad de Psicología y Bienestar Humano'), 'postgrado');
+('Maestría en Ingeniería de Software', (SELECT id_facultad FROM facultad WHERE nombre = 'Facultad de Ingeniería y Tecnologías'), 'posgrado'),
+('Maestría en Administración (MBA)', (SELECT id_facultad FROM facultad WHERE nombre = 'Facultad de Ciencias Empresariales'), 'posgrado'),
+('Especialización en Neuropsicología', (SELECT id_facultad FROM facultad WHERE nombre = 'Facultad de Psicología y Bienestar Humano'), 'posgrado');
 
 /*Participante Programa Académico*/
 INSERT INTO obligatorio.participante_programa_academico (ci_participante, id_programa, rol)

@@ -40,12 +40,12 @@ def crear_nueva_sancion():
     data = request.get_json()
     ci_participante = data.get('ci_participante')
     fecha_inicio = data.get('fecha_inicio')
-    meses = data.get('meses', 2)
+    fecha_fin = data.get('fecha_fin')
 
     if not ci_participante:
         return jsonify({"mensaje": "El campo 'ci_participante' es obligatorio"}), 400
 
-    sancion, mensaje = crear_sancion(ci_participante, fecha_inicio, meses)
+    sancion, mensaje = crear_sancion(ci_participante, fecha_inicio, fecha_fin)
     if sancion:
         return jsonify({"mensaje": mensaje, "sancion": sancion}), 201
     return jsonify({"mensaje": mensaje}), 400

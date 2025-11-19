@@ -21,11 +21,11 @@ def obtener_uno(id_programa):
 @programa_academico_bp.route('/programas', methods=['POST'])
 def crear():
     data = request.get_json()
-    nombre = data.get('nombre_programa')
+    nombre_programa = data.get('nombre_programa')
     id_facultad = data.get('id_facultad')
     tipo = data.get('tipo')
 
-    programa, mensaje = crear_programa(nombre, id_facultad, tipo)
+    programa, mensaje = crear_programa(nombre_programa, id_facultad, tipo)
     
     if programa:
         return jsonify({"mensaje": mensaje, "programa": programa}), 201

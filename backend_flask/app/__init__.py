@@ -9,6 +9,10 @@ from app.endpoints import (
     reserva_bp,
     reserva_participante_bp,
     sanciones_bp,
+    edificio_bp,
+    facultad_bp,
+    sala_bp,
+    turno_bp,
 )
 import logging
 import json
@@ -39,6 +43,10 @@ def create_app():
     app.register_blueprint(reserva_bp)
     app.register_blueprint(reserva_participante_bp)
     app.register_blueprint(sanciones_bp)
+    app.register_blueprint(edificio_bp)
+    app.register_blueprint(facultad_bp)
+    app.register_blueprint(sala_bp)
+    app.register_blueprint(turno_bp)
 
     #Ruta raiz
     @app.route("/")

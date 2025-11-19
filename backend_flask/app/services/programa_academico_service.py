@@ -47,10 +47,24 @@ def eliminar_programa(id_programa):
     conn = conexion()
     cursor = conn.cursor()
     
-    cursor.execute("DELETE FROM programa_academico WHERE id_programa = %s", (id_programa,))
-    
-    conn.commit()
-    filas = cursor.rowcount
-    conn.close()
-    
-    return filas > 0
+    try:
+        cursor.execute("SELECT id_programa FROM programa_academico WHERE id_programa = %s", (id_programa,))
+
+        if cursor.fetchone() is None:
+            conn.close()
+            return False  
+        
+        cursor.execute("DELETE FROM participante_programa_academico WHERE id_programa = %s", (id_programa,))
+
+        cursor.execute("DELETE FROM programa_academico WHERE id_programa = %s", (id_programa,))
+
+        conn.commit()
+        return True
+
+    except Exception as e:
+        conn.rollback()
+        print("ERROR al borrar programa:", e)
+        return False
+
+    finally:
+        conn.close()

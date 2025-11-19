@@ -22,12 +22,11 @@ def listar_salas():
     return salas
 
 
-
-def obtener_sala(nombre_sala):
+def obtener_sala(id_sala):
     conn = conexion()
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT * FROM sala WHERE nombre_sala = %s", (nombre_sala,))
+    cursor.execute("SELECT * FROM sala WHERE id_sala = %s", (id_sala,))
 
     sala = cursor.fetchone()
     conn.close()
@@ -66,15 +65,28 @@ def agregar_sala(nombre_sala, id_edificio, capacidad, tipo_sala):
     }, "Sala creada exitosamente"
 
 
-
-def eliminar_sala(nombre_sala):
+def eliminar_sala(id_sala):
     conn = conexion()
     cursor = conn.cursor()
 
-    cursor.execute("DELETE FROM sala WHERE nombre_sala = %s", (nombre_sala,))
+    try:
+        cursor.execute("""
+            DELETE rp FROM reserva_participante rp
+            JOIN reserva r ON rp.id_reserva = r.id_reserva
+            WHERE r.id_sala = %s
+        """, (id_sala,))
 
-    conn.commit()
-    filas = cursor.rowcount
-    conn.close()
+        cursor.execute("DELETE FROM reserva WHERE id_sala = %s", (id_sala,))
 
-    return filas > 0
+        cursor.execute("DELETE FROM sala WHERE id_sala = %s", (id_sala,))
+
+        conn.commit()
+        return cursor.rowcount > 0
+
+    except Exception as e:
+        conn.rollback()
+        print("ERROR al borrar sala:", e)
+        return False
+
+    finally:
+        conn.close()
