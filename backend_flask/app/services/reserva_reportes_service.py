@@ -123,6 +123,7 @@ def actividad_participantes():
     conn.close()
     return datos
 
+#Cantidad de sanciones por tipo de persona
 def cantidad_sanciones():
     conn = conexion()
     cursor = conn.cursor(dictionary=True)
