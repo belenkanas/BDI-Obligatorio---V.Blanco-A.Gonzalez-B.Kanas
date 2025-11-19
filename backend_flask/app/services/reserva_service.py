@@ -94,15 +94,19 @@ def crear_reserva(id_sala, fecha, id_turno, estado="activa", participantes=None)
                 return None, f"El participante {ci} tiene una sanción vigente y no puede realizar reservas hasta {sancion['fecha_fin']}."
 
         #Revisar restricciones según los roles, tipo de programa y tipo de sala
-        cursor.execute("""
-            SELECT ppa.ci_participante, ppa.rol, pa.tipo
-            FROM participante_programa_academico ppa
-            JOIN programa_academico pa ON ppa.id_programa = pa.id_programa
-            WHERE ppa.ci_participante IN (%s)
-        """ % ','.join(['%s'] * len(participantes)), tuple(participantes))
-        roles = cursor.fetchall()
-        participantes_roles = {r['ci_participante']: (r['rol'], r['tipo']) for r in roles}
+        participantes_roles = {}
 
+        if participantes:
+            placeholders = ','.join(['%s'] * len(participantes))
+            cursor.execute(f"""
+                SELECT ppa.ci_participante, ppa.rol, pa.tipo
+                FROM participante_programa_academico ppa
+                JOIN programa_academico pa ON ppa.id_programa = pa.id_programa
+                WHERE ppa.ci_participante IN ({placeholders})
+            """, tuple(participantes))
+            roles = cursor.fetchall()
+            participantes_roles = {r['ci_participante']: (r['rol'], r['tipo']) for r in roles}
+        
         for ci in participantes or []:
             rol, tipo = participantes_roles.get(ci, (None, None))
             tipo_sala = sala['tipo_sala']
