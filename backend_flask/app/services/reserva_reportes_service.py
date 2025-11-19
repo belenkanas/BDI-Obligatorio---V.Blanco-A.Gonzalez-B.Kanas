@@ -58,15 +58,22 @@ def reservas_por_carrera():
     cursor = conn.cursor(dictionary=True)
 
     cursor.execute("""
-        SELECT pa.nombre_programa,
-               pa.facultad,
-               COUNT(*) AS total_reservas
-        FROM reserva_participante rp
-        JOIN participante_programa_academico ppa ON rp.ci_participante = ppa.ci_participante
-        JOIN programa_academico pa ON ppa.id_programa = pa.id_programa
-        GROUP BY pa.id_programa
-        ORDER BY total_reservas DESC
+        SELECT f.nombre AS facultad,
+            pa.nombre_programa AS programa,
+            COUNT(DISTINCT r.id_reserva) AS cantidad_reservas
+        FROM obligatorio.reserva r
+        JOIN obligatorio.reserva_participante rp 
+            ON r.id_reserva = rp.id_reserva
+        JOIN obligatorio.participante_programa_academico ppa 
+            ON rp.ci_participante = ppa.ci_participante
+        JOIN obligatorio.programa_academico pa 
+            ON ppa.id_programa = pa.id_programa
+        JOIN obligatorio.facultad f 
+            ON pa.id_facultad = f.id_facultad
+        GROUP BY f.nombre, pa.nombre_programa
+        ORDER BY cantidad_reservas DESC
     """)
+
 
     datos = cursor.fetchall()
     conn.close()
