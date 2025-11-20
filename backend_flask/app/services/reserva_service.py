@@ -76,6 +76,15 @@ def crear_reserva(id_sala, fecha, id_turno, estado="activa", participantes=None)
             conection.close()
             return None, "El turno especificado no existe"
 
+        # Validar que no exista reserva activa para la misma sala, fecha y turno
+        cursor.execute("""
+            SELECT * FROM reserva
+            WHERE id_sala = %s AND id_turno = %s AND fecha = %s AND estado = 'activa'
+        """, (id_sala, id_turno, fecha))
+        if cursor.fetchone():
+            conection.close()
+            return None, "Ya existe una reserva activa para esta sala, fecha y turno."
+
         #Validar capacidad de la sala
         if participantes and len(participantes) > sala['capacidad']:
             conection.close()

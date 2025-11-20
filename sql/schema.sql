@@ -81,8 +81,12 @@ CREATE TABLE reserva(
   estado ENUM('activa', 'cancelada', 'sin_asistencia', 'finalizada') NOT NULL,
   PRIMARY KEY (id_reserva),
   FOREIGN KEY (id_sala) REFERENCES sala(id_sala),
-  FOREIGN KEY (id_turno) REFERENCES turno(id_turno)
+  FOREIGN KEY (id_turno) REFERENCES turno(id_turno),
+  -- Este constraint evita duplicados exactos de sala, fecha, turno y estado
+  CONSTRAINT reserva_unica UNIQUE (id_sala, fecha, id_turno, estado)
 );
+
+
 
 CREATE TABLE reserva_participante(
   ci_participante VARCHAR(8) NOT NULL,
