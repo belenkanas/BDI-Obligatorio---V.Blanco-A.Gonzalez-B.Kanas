@@ -36,6 +36,11 @@ def crear():
     id_turno = data.get('id_turno')
     estado = data.get('estado', 'activa')
     participantes = data.get('participantes', [])  # lista de CIs
+    ci_creador = data.get('ci_creador')
+
+    # Si el creador no está en participantes, se agrega automáticamente
+    if ci_creador and ci_creador not in participantes:
+        participantes.append(ci_creador)
 
     reserva, mensaje = crear_reserva(id_sala, fecha, id_turno, estado, participantes)
     if reserva:
