@@ -81,7 +81,8 @@ CREATE TABLE reserva(
   estado ENUM('activa', 'cancelada', 'sin_asistencia', 'finalizada') NOT NULL,
   PRIMARY KEY (id_reserva),
   FOREIGN KEY (id_sala) REFERENCES sala(id_sala),
-  FOREIGN KEY (id_turno) REFERENCES turno(id_turno)
+  FOREIGN KEY (id_turno) REFERENCES turno(id_turno),
+  UNIQUE KEY uq_reserva_activa (id_sala, fecha, id_turno, estado)
 );
 
 CREATE TABLE reserva_participante(
@@ -103,39 +104,7 @@ CREATE TABLE sancion_participante(
   FOREIGN KEY (ci_participante) REFERENCES participante(ci)
 );
 
--- TRIGGER PARA RESERVAS ACTIVAS DUPLICADAS
-
-DELIMITER //
-
-CREATE TRIGGER trg_reserva_no_duplicada
-BEFORE INSERT ON reserva
-FOR EACH ROW
-BEGIN
-    IF NEW.estado = 'activa' THEN
-        IF EXISTS (
-            SELECT 1
-            FROM reserva
-            WHERE id_sala = NEW.id_sala
-              AND fecha = NEW.fecha
-              AND id_turno = NEW.id_turno
-              AND estado = 'activa'
-        ) THEN
-            SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Ya existe una reserva activa para esta sala, fecha y turno';
-        END IF;
-    END IF;
-END;
-//
-
-DELIMITER ;
-
--- CONSTRAINT UNIQUE PARA CUALQUIER ESTADO
--- ==========================
--- Esto evita duplicados de id_sala+fecha+id_turno incluso si no es "activa"
--- ALTER TABLE reserva
--- ADD CONSTRAINT uq_reserva UNIQUE (id_sala, fecha, id_turno);
--- Insercion de tablas
--- LOGIN
+-- Inserciones de tabla
 
 INSERT INTO login (correo, contraseña) VALUES
 ('valentina.blanco@correo.ucu.edu.uy', 'valentina123'),
