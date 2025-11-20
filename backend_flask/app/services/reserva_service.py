@@ -419,3 +419,30 @@ def listar_reservas_con_asistencias_filtro(estado=None, fecha_desde=None, fecha_
 
 def cancelar_reserva(id_reserva):
     return actualizar_estado_reserva(id_reserva, "cancelada")
+
+def listar_reservas_por_participante(ci):
+    conn = conexion()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT 
+            r.id_reserva,
+            r.fecha,
+            r.estado,
+            t.hora_inicio,
+            t.hora_fin,
+            s.nombre_sala,
+            e.nombre_edificio,
+            rp.asistencia
+        FROM reserva_participante rp
+        JOIN reserva r ON rp.id_reserva = r.id_reserva
+        JOIN turno t ON r.id_turno = t.id_turno
+        JOIN sala s ON r.id_sala = s.id_sala
+        JOIN edificio e ON s.id_edificio = e.id_edificio
+        WHERE rp.ci_participante = %s
+        ORDER BY r.fecha DESC, t.hora_inicio
+    """, (ci,))
+
+    reservas = cursor.fetchall()
+    conn.close()
+    return reservas
