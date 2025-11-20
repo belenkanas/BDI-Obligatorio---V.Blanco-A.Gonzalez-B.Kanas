@@ -38,3 +38,10 @@ def eliminar(ci):
     if eliminar_participante(ci):
         return jsonify({"mensaje": "Participante eliminado exitosamente"}), 200
     return jsonify({"mensaje": "Participante no encontrado"}), 404
+
+
+@participante_bp.route('/participantes-permitidos', methods=['GET'])
+def participantes_permitidos():
+    id_sala = request.args.get('id_sala')
+    participantes = obtener_participantes_permitidos(id_sala)
+    return jsonify(participantes), 200

@@ -90,3 +90,32 @@ def eliminar_sala(id_sala):
 
     finally:
         conn.close()
+
+
+def obtener_salas_permitidas(ci):
+    conn = conexion()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT ppa.rol, pa.tipo AS tipo_programa
+        FROM participante_programa_academico ppa
+        JOIN programa_academico pa ON pa.id_programa = ppa.id_programa
+        WHERE ppa.ci_participante = %s
+    """, (ci,))
+    datos = cursor.fetchone()
+
+    rol = datos["rol"]
+    tipo_programa = datos["tipo_programa"]
+
+    if rol == "docente":
+        filtro = ("libre", "docente")
+    elif tipo_programa == "posgrado":
+        filtro = ("libre", "posgrado")
+    else:
+        filtro = ("libre",)
+
+    cursor.execute("SELECT * FROM sala WHERE tipo_sala IN %s", (filtro,))
+    salas = cursor.fetchall()
+
+    conn.close()
+    return salas

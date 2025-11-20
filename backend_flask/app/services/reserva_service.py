@@ -94,15 +94,19 @@ def crear_reserva(id_sala, fecha, id_turno, estado="activa", participantes=None)
                 return None, f"El participante {ci} tiene una sanción vigente y no puede realizar reservas hasta {sancion['fecha_fin']}."
 
         #Revisar restricciones según los roles, tipo de programa y tipo de sala
-        cursor.execute("""
-            SELECT ppa.ci_participante, ppa.rol, pa.tipo
-            FROM participante_programa_academico ppa
-            JOIN programa_academico pa ON ppa.id_programa = pa.id_programa
-            WHERE ppa.ci_participante IN (%s)
-        """ % ','.join(['%s'] * len(participantes)), tuple(participantes))
-        roles = cursor.fetchall()
-        participantes_roles = {r['ci_participante']: (r['rol'], r['tipo']) for r in roles}
+        participantes_roles = {}
 
+        if participantes:
+            placeholders = ','.join(['%s'] * len(participantes))
+            cursor.execute(f"""
+                SELECT ppa.ci_participante, ppa.rol, pa.tipo
+                FROM participante_programa_academico ppa
+                JOIN programa_academico pa ON ppa.id_programa = pa.id_programa
+                WHERE ppa.ci_participante IN ({placeholders})
+            """, tuple(participantes))
+            roles = cursor.fetchall()
+            participantes_roles = {r['ci_participante']: (r['rol'], r['tipo']) for r in roles}
+        
         for ci in participantes or []:
             rol, tipo = participantes_roles.get(ci, (None, None))
             tipo_sala = sala['tipo_sala']
@@ -415,3 +419,30 @@ def listar_reservas_con_asistencias_filtro(estado=None, fecha_desde=None, fecha_
 
 def cancelar_reserva(id_reserva):
     return actualizar_estado_reserva(id_reserva, "cancelada")
+
+def listar_reservas_por_participante(ci):
+    conn = conexion()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT 
+            r.id_reserva,
+            r.fecha,
+            r.estado,
+            t.hora_inicio,
+            t.hora_fin,
+            s.nombre_sala,
+            e.nombre_edificio,
+            rp.asistencia
+        FROM reserva_participante rp
+        JOIN reserva r ON rp.id_reserva = r.id_reserva
+        JOIN turno t ON r.id_turno = t.id_turno
+        JOIN sala s ON r.id_sala = s.id_sala
+        JOIN edificio e ON s.id_edificio = e.id_edificio
+        WHERE rp.ci_participante = %s
+        ORDER BY r.fecha DESC, t.hora_inicio
+    """, (ci,))
+
+    reservas = cursor.fetchall()
+    conn.close()
+    return reservas
