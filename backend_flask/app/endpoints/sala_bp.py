@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from app.services.sala_service import (listar_salas, obtener_sala, agregar_sala, eliminar_sala, obtener_salas_permitidas)
+from app.services.sala_service import (listar_salas, obtener_sala, agregar_sala, eliminar_sala, obtener_salas_permitidas_para_usuario)
 
 sala_bp = Blueprint('sala', __name__)
 
@@ -40,7 +40,11 @@ def eliminar_sala_endpoint(id_sala):
     return jsonify({"mensaje": "Sala no encontrada"}), 404
 
 
-@sala_bp.route('/salas-permitidas/<ci>', methods=['GET'])
-def salas_permitidas(ci):
-    salas = obtener_salas_permitidas(ci)
+@sala_bp.route('/salas-permitidas', methods=['GET'])
+def salas_permitidas():
+    ci = request.args.get("ci")
+    id_edificio = request.args.get("id_edificio")
+
+    from app.services.sala_service import obtener_salas_permitidas_para_usuario
+    salas = obtener_salas_permitidas_para_usuario(ci, id_edificio)
     return jsonify(salas), 200

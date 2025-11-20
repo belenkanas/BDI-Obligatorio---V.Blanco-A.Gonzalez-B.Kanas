@@ -92,30 +92,54 @@ def eliminar_sala(id_sala):
         conn.close()
 
 
-def obtener_salas_permitidas(ci):
+def obtener_salas_permitidas_para_usuario(ci, id_edificio):
     conn = conexion()
     cursor = conn.cursor(dictionary=True)
 
+    # Obtener rol y programa del usuario
     cursor.execute("""
         SELECT ppa.rol, pa.tipo AS tipo_programa
         FROM participante_programa_academico ppa
-        JOIN programa_academico pa ON pa.id_programa = ppa.id_programa
+        JOIN programa_academico pa ON ppa.id_programa = pa.id_programa
         WHERE ppa.ci_participante = %s
+        LIMIT 1
     """, (ci,))
     datos = cursor.fetchone()
+
+    if datos is None:
+        conn.close()
+        return []
 
     rol = datos["rol"]
     tipo_programa = datos["tipo_programa"]
 
-    if rol == "docente":
-        filtro = ("libre", "docente")
-    elif tipo_programa == "posgrado":
-        filtro = ("libre", "posgrado")
-    else:
-        filtro = ("libre",)
+    # Obtener salas SOLO del edificio elegido
+    cursor.execute("""
+        SELECT *
+        FROM sala
+        WHERE id_edificio = %s
+    """, (id_edificio,))
+    todas_salas = cursor.fetchall()
 
-    cursor.execute("SELECT * FROM sala WHERE tipo_sala IN %s", (filtro,))
-    salas = cursor.fetchall()
+    salas_permitidas = []
+
+    for sala in todas_salas:
+        tipo_sala = sala["tipo_sala"]
+
+        # DOCENTE → docente + libre
+        if rol == "docente":
+            if tipo_sala in ["docente", "libre"]:
+                salas_permitidas.append(sala)
+
+        # ALUMNO POSGRADO → posgrado + libre
+        elif rol == "alumno" and tipo_programa == "posgrado":
+            if tipo_sala in ["posgrado", "libre"]:
+                salas_permitidas.append(sala)
+
+        # ALUMNO GRADO → solo libre
+        elif rol == "alumno" and tipo_programa == "grado":
+            if tipo_sala == "libre":
+                salas_permitidas.append(sala)
 
     conn.close()
-    return salas
+    return salas_permitidas

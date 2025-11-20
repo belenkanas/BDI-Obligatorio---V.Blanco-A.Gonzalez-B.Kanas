@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from app.services.participante_service import (listar_participantes, obtener_participante, agregar_participante, eliminar_participante)
+from app.services.participante_service import (listar_participantes, obtener_participante, agregar_participante, eliminar_participante, obtener_participantes_permitidos)
 
 participante_bp = Blueprint('participante', __name__)
 
@@ -42,6 +42,6 @@ def eliminar(ci):
 
 @participante_bp.route('/participantes-permitidos', methods=['GET'])
 def participantes_permitidos():
-    id_sala = request.args.get('id_sala')
+    id_sala = int(request.args.get('id_sala'))
     participantes = obtener_participantes_permitidos(id_sala)
     return jsonify(participantes), 200

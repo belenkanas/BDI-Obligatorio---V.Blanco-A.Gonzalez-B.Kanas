@@ -76,7 +76,7 @@ def obtener_participantes_permitidos(id_sala):
             SELECT p.*
             FROM participante p
             JOIN participante_programa_academico ppa ON p.ci = ppa.ci_participante
-            JOIN programa_academico pa ON pa.id_programa = pa.id_programa
+            JOIN programa_academico pa ON ppa.id_programa = pa.id_programa
             WHERE ppa.rol = 'alumno'
               AND pa.tipo = 'posgrado'
         """
