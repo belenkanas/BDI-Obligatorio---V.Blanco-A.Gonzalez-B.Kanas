@@ -1,11 +1,11 @@
---Este script une lo ya hecho en Creacion de Base e Inserción Tablas.
---La idea es que se corra como script cuando se levante el contenedor
+-- Este script une lo ya hecho en Creacion de Base e Inserción Tablas.
+-- La idea es que se corra como script cuando se levante el contenedor
 
 DROP DATABASE IF EXISTS obligatorio;
 CREATE DATABASE obligatorio CHARACTER SET utf8 COLLATE utf8_spanish_ci;
 USE obligatorio;
 
---Creacion de tablas:
+-- Creacion de tablas:
 CREATE TABLE login(
   correo VARCHAR(255) NOT NULL,
   contraseña VARCHAR(255) NOT NULL,
@@ -81,12 +81,8 @@ CREATE TABLE reserva(
   estado ENUM('activa', 'cancelada', 'sin_asistencia', 'finalizada') NOT NULL,
   PRIMARY KEY (id_reserva),
   FOREIGN KEY (id_sala) REFERENCES sala(id_sala),
-  FOREIGN KEY (id_turno) REFERENCES turno(id_turno),
-  -- Este constraint evita duplicados exactos de sala, fecha, turno y estado
-  CONSTRAINT reserva_unica UNIQUE (id_sala, fecha, id_turno, estado)
+  FOREIGN KEY (id_turno) REFERENCES turno(id_turno)
 );
-
-
 
 CREATE TABLE reserva_participante(
   ci_participante VARCHAR(8) NOT NULL,
@@ -107,8 +103,40 @@ CREATE TABLE sancion_participante(
   FOREIGN KEY (ci_participante) REFERENCES participante(ci)
 );
 
---Insercion de tablas
+-- TRIGGER PARA RESERVAS ACTIVAS DUPLICADAS
+
+DELIMITER //
+
+CREATE TRIGGER trg_reserva_no_duplicada
+BEFORE INSERT ON reserva
+FOR EACH ROW
+BEGIN
+    IF NEW.estado = 'activa' THEN
+        IF EXISTS (
+            SELECT 1
+            FROM reserva
+            WHERE id_sala = NEW.id_sala
+              AND fecha = NEW.fecha
+              AND id_turno = NEW.id_turno
+              AND estado = 'activa'
+        ) THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Ya existe una reserva activa para esta sala, fecha y turno';
+        END IF;
+    END IF;
+END;
+//
+
+DELIMITER ;
+
+-- CONSTRAINT UNIQUE PARA CUALQUIER ESTADO
+-- ==========================
+-- Esto evita duplicados de id_sala+fecha+id_turno incluso si no es "activa"
+-- ALTER TABLE reserva
+-- ADD CONSTRAINT uq_reserva UNIQUE (id_sala, fecha, id_turno);
+-- Insercion de tablas
 -- LOGIN
+
 INSERT INTO login (correo, contraseña) VALUES
 ('valentina.blanco@correo.ucu.edu.uy', 'valentina123'),
 ('mariabelen.kanas@correo.ucu.edu.uy', '12345678765'),
