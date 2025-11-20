@@ -62,6 +62,7 @@ backend_flask/
 │   │   ├── programa_academico_bp.py
 │   │   ├── reserva_bp.py
 │   │   ├── reserva_participante_bp.py
+│   │   ├── reserva_reportes_bp.py
 │   │   ├── sala_bp.py
 │   │   ├── sancion_participante_bp.py
 │   │   └── turno_bp.py
@@ -76,6 +77,7 @@ backend_flask/
 │   │   ├── programa_academico_service.py
 │   │   ├── reserva_service.py
 │   │   ├── reserva_participante_service.py
+│   │   ├── reserva_reportes_service.py
 │   │   ├── sala_service.py
 │   │   ├── sancion_participante_service.py
 │   │   └── turno_service.py
