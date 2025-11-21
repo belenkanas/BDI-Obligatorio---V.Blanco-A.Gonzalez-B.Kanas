@@ -96,12 +96,13 @@ def obtener_reservas_con_filtro():
     return jsonify(reservas), 200
 
 #  Cancelar reserva
-@reserva_bp.route('/reservas/<int:id_reserva>/cancelar', methods=['PUT'])
-def cancelar(id_reserva):
+@reserva_bp.route("/reservas/<int:id_reserva>/cancelar", methods=["PUT"])
+def cancelar_reserva_endpoint(id_reserva):
     resultado, mensaje = cancelar_reserva(id_reserva)
     if resultado:
-        return jsonify({"mensaje": mensaje, "reserva": resultado}), 200
-    return jsonify({"mensaje": mensaje}), 404
+        return jsonify({"resultado": resultado, "mensaje": mensaje}), 200
+    else:
+        return jsonify({"mensaje": mensaje}), 400
 
 # Obtener todas las reservas en las que participa un usuario (por CI)
 
