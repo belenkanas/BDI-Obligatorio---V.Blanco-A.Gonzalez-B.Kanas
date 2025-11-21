@@ -137,26 +137,21 @@ MYSQL_PASSWORD=admin123
 
 ### Construcción y levantamiento del proyecto con Docker
 
-1. Desde la raiz del repositorio, ejecutar:
+Desde la raiz del repositorio, ejecutar:
 ```
 docker compose -f docker-compose-obligatorio.yml up --build
 ```
 Esto levanta el contenedor **MySQL** y el **Flask Backend**
 
-2. Instalación manual (opcional, fuera de Docker) 
-
-**Instalar dependencias**:
-```
-pip install -r requirements.txt
-```
-**Ejecutar backend**:
-```
-python -m app
-```
 ### Establecer conexión del modelo en DataGrip
 Teniendo en cuenta los datos envueltos en `.env`, completar los campos siguiendo la imagen:
 
 ![Conexión DataGrip](image.png)
+
+### ⚠️ IMPORTANTE: Es necesario cargar la base de datos
+#### Esta parte es manual. Para realizarlo se debe ejecutar el archivo `schema.sql` desde la consola de DataGrip con conexión al entorno del obligatorio.
+
+![Carga de Base de Datos](image-1.png)
 
 --- 
 
@@ -168,9 +163,9 @@ A continuación se detallan todos los endpoints expuestos por la API REST, organ
 | Método     | URL                            | Descripción                    |
 | ---------- | ------------------------------ | ------------------------------ |
 | **GET**    | `/edificios`                   | Listar todos los edificios     |
-| **GET**    | `/edificios/<nombre_edificio>` | Obtener un edificio específico |
+| **GET**    | `/edificios/<id_edificio>` | Obtener un edificio específico |
 | **POST**   | `/edificios`                   | Crear un edificio              |
-| **DELETE** | `/edificios/<nombre_edificio>` | Eliminar un edificio           |
+| **DELETE** | `/edificios/<id_edificio>` | Eliminar un edificio           |
 
 ### 🏛 Facultades (_facultad_bp_)
 
@@ -207,9 +202,9 @@ A continuación se detallan todos los endpoints expuestos por la API REST, organ
 | Método     | URL               | Descripción       |
 | ---------- | ----------------- | ----------------- |
 | **GET**    | `/programas`      | Listar programas  |
-| **GET**    | `/programas/<id>` | Obtener programa  |
+| **GET**    | `/programas/<id_programa>` | Obtener programa  |
 | **POST**   | `/programas`      | Crear programa    |
-| **DELETE** | `/programas/<id>` | Eliminar programa |
+| **DELETE** | `/programas/<id_programa>` | Eliminar programa |
 
 ### 📅 Reservas (_reserva_bp_)
 | Método   | URL                                  | Descripción                     |
@@ -218,7 +213,7 @@ A continuación se detallan todos los endpoints expuestos por la API REST, organ
 | **GET**  | `/reservas/<id_reserva>`             | Obtener una reserva             |
 | **POST** | `/reservas`                          | Crear reserva                   |
 | **PUT**  | `/reservas/<id_reserva>/estado`      | Actualizar estado de la reserva |
-| **PUT**  | `/reservas/<id_reserva>/asistencias` | Registrar asistencias           |
+| **PUT**  | `/reservas/<id_reserva>/asistencias` | Listar reservas detalladas con filtros opcionales           |
 | **GET**  | `/reservas/detalladas`               | Listado detallado con filtros   |
 | **PUT**  | `/reservas/<id_reserva>/cancelar`    | Cancelar reserva                |
 

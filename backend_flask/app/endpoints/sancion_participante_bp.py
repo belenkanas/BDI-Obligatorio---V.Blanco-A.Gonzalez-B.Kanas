@@ -58,3 +58,23 @@ def sancionar_reserva_sin_asistencia(id_reserva):
     if resultado:
         return jsonify({"mensaje": mensaje, "participantes_sancionados": resultado}), 201
     return jsonify({"mensaje": mensaje}), 400
+
+@sanciones_bp.route('/sanciones/<ci>/activas', methods=['GET'])
+def obtener_sanciones_activas_de_participante(ci):
+    conn = conexion()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT *
+        FROM sancion_participante
+        WHERE ci_participante = %s
+        AND NOW() BETWEEN fecha_inicio AND fecha_fin
+    """, (ci,))
+
+    sanciones = cursor.fetchall()
+    conn.close()
+
+    return jsonify({
+        "tiene_sancion": len(sanciones) > 0,
+        "sanciones": sanciones
+    }), 200
