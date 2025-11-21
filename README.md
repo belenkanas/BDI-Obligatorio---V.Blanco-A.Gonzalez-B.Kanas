@@ -202,9 +202,9 @@ A continuación se detallan todos los endpoints expuestos por la API REST, organ
 | Método     | URL               | Descripción       |
 | ---------- | ----------------- | ----------------- |
 | **GET**    | `/programas`      | Listar programas  |
-| **GET**    | `/programas/<id>` | Obtener programa  |
+| **GET**    | `/programas/<id_programa>` | Obtener programa  |
 | **POST**   | `/programas`      | Crear programa    |
-| **DELETE** | `/programas/<id>` | Eliminar programa |
+| **DELETE** | `/programas/<id_programa>` | Eliminar programa |
 
 ### 📅 Reservas (_reserva_bp_)
 | Método   | URL                                  | Descripción                     |
@@ -213,7 +213,7 @@ A continuación se detallan todos los endpoints expuestos por la API REST, organ
 | **GET**  | `/reservas/<id_reserva>`             | Obtener una reserva             |
 | **POST** | `/reservas`                          | Crear reserva                   |
 | **PUT**  | `/reservas/<id_reserva>/estado`      | Actualizar estado de la reserva |
-| **PUT**  | `/reservas/<id_reserva>/asistencias` | Registrar asistencias           |
+| **PUT**  | `/reservas/<id_reserva>/asistencias` | Listar reservas detalladas con filtros opcionales           |
 | **GET**  | `/reservas/detalladas`               | Listado detallado con filtros   |
 | **PUT**  | `/reservas/<id_reserva>/cancelar`    | Cancelar reserva                |
 
