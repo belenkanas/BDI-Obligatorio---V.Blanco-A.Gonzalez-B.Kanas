@@ -8,7 +8,7 @@ USE obligatorio;
 -- Creacion de tablas:
 CREATE TABLE login(
   correo VARCHAR(255) NOT NULL,
-  contraseña VARCHAR(255) NOT NULL,
+  contrasena VARCHAR(255) NOT NULL,
   PRIMARY KEY (correo)
 );
 
@@ -106,7 +106,7 @@ CREATE TABLE sancion_participante(
 
 -- Inserciones de tabla
 
-INSERT INTO login (correo, contraseña) VALUES
+INSERT INTO login (correo, contrasena) VALUES
 ('valentina.blanco@correo.ucu.edu.uy', 'valentina123'),
 ('mariabelen.kanas@correo.ucu.edu.uy', '12345678765'),
 ('andrea.gonzalez@correo.ucu.edu.uy', 'irry834dj'),
