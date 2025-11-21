@@ -6,7 +6,7 @@ def login(correo, password):
 
     # 1. Verificar login
     cursor.execute(
-        "SELECT correo FROM login WHERE correo = %s AND contraseña = %s",
+        "SELECT correo FROM login WHERE correo = %s AND contrasena = %s",
         (correo, password)
     )
     existe = cursor.fetchone()
@@ -60,7 +60,7 @@ def register_user(correo, password):
         conn.close()
         return None, "El usuario ya existe"
 
-    cursor.execute("INSERT INTO login (correo, contraseña) VALUES (%s, %s)", (correo, password))
+    cursor.execute("INSERT INTO login (correo, contrasena) VALUES (%s, %s)", (correo, password))
     conn.commit()
     conn.close()
     return {"correo": correo}, "Usuario registrado exitosamente"
