@@ -81,10 +81,20 @@ def obtener_participantes_permitidos(id_sala):
               AND pa.tipo = 'posgrado'
         """
     else:
-        query = "SELECT * FROM participante"
+        query = """
+            SELECT p.*, ppa.rol
+            FROM participante p
+            LEFT JOIN participante_programa_academico ppa 
+            ON p.ci = ppa.ci_participante
+        """
 
     cursor.execute(query)
     participantes = cursor.fetchall()
+
+    participantes = [
+        p for p in participantes
+        if p.get("rol") != "admin"
+    ]
 
     conn.close()
     return participantes

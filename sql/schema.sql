@@ -238,3 +238,5 @@ INSERT INTO sancion_participante (ci_participante, fecha_inicio, fecha_fin) VALU
 ('57541231', '2025-10-10', '2025-10-17'),
 ('53234567', '2025-10-20', '2025-10-27'),
 ('55788998', '2025-11-21', '2026-01-21');
+
+ALTER TABLE obligatorio.login CHANGE COLUMN contraseña contrasena VARCHAR(255);
