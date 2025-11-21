@@ -11,7 +11,8 @@ VALUES ('valentina.blanco@correo.ucu.edu.uy', 'valentina123'),
        ('paz.garcia@correo.ucu.edu.uy', '6734vbibgiw'),
        ('pedro.silva@correo.ucu.edu.uy', 'ucu8932ohwel'),
        ('jose.martinez@correo.ucu.edu.uy', 'hureik213'),
-       ('luis.sanchez@correo.ucu.edu.uy', 'fre2y89w');
+       ('luis.sanchez@correo.ucu.edu.uy', 'fre2y89w'),
+       ('admin@correo.ucu.edu.uy', 'admin123');
 
 
 /*Participante*/
@@ -26,7 +27,8 @@ VALUES
 ('57876550', 'Paz', 'García', (SELECT correo FROM login WHERE correo='paz.garcia@correo.ucu.edu.uy')),
 ('57541231', 'Pedro', 'Silva', (SELECT correo FROM login WHERE correo='pedro.silva@correo.ucu.edu.uy')),
 ('53234567', 'José', 'Martínez', (SELECT correo FROM login WHERE correo='jose.martinez@correo.ucu.edu.uy')),
-('55875921', 'Luis', 'Sánchez', (SELECT correo FROM login WHERE correo='luis.sanchez@correo.ucu.edu.uy'));
+('55875921', 'Luis', 'Sánchez', (SELECT correo FROM login WHERE correo='luis.sanchez@correo.ucu.edu.uy')),
+('11111111', 'Administrador', 'Ucu', (SELECT correo FROM login WHERE correo='admin@correo.ucu.edu.uy'));
 
 /*Facultad*/
 INSERT INTO obligatorio.facultad (nombre) VALUES
@@ -61,7 +63,8 @@ VALUES
 ((SELECT ci FROM participante WHERE nombre='Paz' AND apellido='García'), (SELECT id_programa FROM programa_academico WHERE nombre_programa='Especialización en Neuropsicología'), 'alumno'),
 ((SELECT ci FROM participante WHERE nombre='Pedro' AND apellido='Silva'), (SELECT id_programa FROM programa_academico WHERE nombre_programa='Ingeniería en Informática'), 'docente'),
 ((SELECT ci FROM participante WHERE nombre='José' AND apellido='Martínez'), (SELECT id_programa FROM programa_academico WHERE nombre_programa='Administración de Empresas'), 'docente'),
-((SELECT ci FROM participante WHERE nombre='Luis' AND apellido='Sánchez'), (SELECT id_programa FROM programa_academico WHERE nombre_programa='Derecho'), 'docente');
+((SELECT ci FROM participante WHERE nombre='Luis' AND apellido='Sánchez'), (SELECT id_programa FROM programa_academico WHERE nombre_programa='Derecho'), 'docente'),
+((SELECT ci FROM participante WHERE nombre='Administrador' AND apellido='Ucu'), (SELECT id_programa FROM programa_academico WHERE nombre_programa='Ingeniería en Informática'), 'admin');
 
 /*Edificios*/
 INSERT INTO obligatorio.edificio(nombre_edificio, direccion, departamento)

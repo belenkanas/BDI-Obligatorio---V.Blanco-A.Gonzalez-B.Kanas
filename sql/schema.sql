@@ -131,7 +131,8 @@ VALUES
 ('57876550', 'Paz', 'García', 'paz.garcia@correo.ucu.edu.uy'),
 ('57541231', 'Pedro', 'Silva', 'pedro.silva@correo.ucu.edu.uy'),
 ('53234567', 'José', 'Martínez', 'jose.martinez@correo.ucu.edu.uy'),
-('55875921', 'Luis', 'Sánchez', 'luis.sanchez@correo.ucu.edu.uy');
+('55875921', 'Luis', 'Sánchez', 'luis.sanchez@correo.ucu.edu.uy'),
+('11111111', 'Administrador', 'Ucu', 'admin@correo.ucu.edu.uy');
 
 -- FACULTADES
 INSERT INTO facultad (nombre) VALUES
@@ -166,7 +167,8 @@ VALUES
 ('57876550', 8, 'alumno'),
 ('57541231', 1, 'docente'),
 ('53234567', 2, 'docente'),
-('55875921', 4, 'docente');
+('55875921', 4, 'docente'),
+('11111111', 1, 'admin');
 
 -- EDIFICIOS
 INSERT INTO edificio (nombre_edificio, direccion, departamento) VALUES
