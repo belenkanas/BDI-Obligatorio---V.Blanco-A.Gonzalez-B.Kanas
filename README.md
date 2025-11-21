@@ -176,7 +176,7 @@ A continuación se detallan todos los endpoints expuestos por la API REST, organ
 | **POST**   | `/facultades`               | Crear facultad              |
 | **DELETE** | `/facultades/<id_facultad>` | Eliminar facultad           |
 
-### 🔐 Auth / Login (_login_bp_)
+### 🔐 Login (_login_bp_)
 | Método   | URL         | Descripción       |
 | -------- | ----------- | ----------------- |
 | **POST** | `/login`    | Iniciar sesión    |
@@ -213,9 +213,10 @@ A continuación se detallan todos los endpoints expuestos por la API REST, organ
 | **GET**  | `/reservas/<id_reserva>`             | Obtener una reserva             |
 | **POST** | `/reservas`                          | Crear reserva                   |
 | **PUT**  | `/reservas/<id_reserva>/estado`      | Actualizar estado de la reserva |
-| **PUT**  | `/reservas/<id_reserva>/asistencias` | Listar reservas detalladas con filtros opcionales           |
-| **GET**  | `/reservas/detalladas`               | Listado detallado con filtros   |
+| **PUT**  | `/reservas/<id_reserva>/asistencias` | Registrar asistencias de una reserva |
+| **GET**  | `/reservas/detalladas`               | Listar reservas detalladas con filtros opcionales   |
 | **PUT**  | `/reservas/<id_reserva>/cancelar`    | Cancelar reserva                |
+| **GET**  | `/misreservas/<ci>`    | Obtener todas las reservas en las que participa un usuario (por CI)                |
 
 ### 👥📅 Relación Reserva–Participante (_reserva_participante_bp_)
 | Método     | URL                                            | Descripción                         |
@@ -226,13 +227,26 @@ A continuación se detallan todos los endpoints expuestos por la API REST, organ
 | **PUT**    | `/reservas/<id>/participantes/<ci>/asistencia` | Actualizar asistencia individual    |
 | **DELETE** | `/reservas/<id>/participantes/<ci>`            | Eliminar participante de la reserva |
 
+### 📶 Reportes de Reservas (_reserva_reportes_bp_)
+| Método   | URL                                  | Descripción                     |
+| -------- | ------------------------------------ | ------------------------------- |
+| **GET**  | `/reservas/reportes/salas-mas-reservadas`                          | Lista las salas más reservadas       |
+| **GET**  | `/reservas/reportes/turnos-mas-demandados`             | Obtiene una lista con los turnos más reservadis             |
+| **GET** | `/reservas`                          | Crear reserva                   |
+| **GET**  | `/reservas/reportes/promedio-participantes-sala`      | Promedio de participantes por sala |
+| **GET**  | `/reservas/reportes/reservas-por-carrera` | Reporta la cantidad de reservas que realizan los estudiantes agrupados por sus carreras |
+| **GET**  | `/reservas/reportes/ocupacion-edificio`               | Porcentaje de ocupación de salas por edificio    |
+| **GET**  | `/reservas/reportes/actividad-personas`    | Cantidad de reservas y asistencias de profesores y alumnos (grado y posgrado)                |
+| **GET**  | `/reservas/reportes/sanciones`    | Cantidad de sanciones para profesores y alumnos (grado y posgrado)                |
+
 ### 🏫 Salas (_sala_bp_)
 | Método     | URL                    | Descripción   |
 | ---------- | ---------------------- | ------------- |
 | **GET**    | `/salas`               | Listar salas  |
-| **GET**    | `/salas/<nombre_sala>` | Obtener sala  |
+| **GET**    | `/salas/<id_sala>` | Obtener sala  |
 | **POST**   | `/salas`               | Crear sala    |
-| **DELETE** | `/salas/<nombre_sala>` | Eliminar sala |
+| **DELETE** | `/salas/<id_sala>` | Eliminar sala |
+| **GET** | `/salas-permitidas` | Devuelve las salas permitidas para el usuario indicando la CI solicitada en frontend |
 
 ### 🚫 Sanciones (_sanciones_bp_)
 | Método   | URL                                     | Descripción                               |
@@ -249,9 +263,9 @@ A continuación se detallan todos los endpoints expuestos por la API REST, organ
 | Método     | URL            | Descripción    |
 | ---------- | -------------- | -------------- |
 | **GET**    | `/turnos`      | Listar turnos  |
-| **GET**    | `/turnos/<id>` | Obtener turno  |
+| **GET**    | `/turnos/<id_turno>` | Obtener turno  |
 | **POST**   | `/turnos`      | Crear turno    |
-| **DELETE** | `/turnos/<id>` | Eliminar turno |
+| **DELETE** | `/turnos/<id_turno>` | Eliminar turno |
 
 ---
 
