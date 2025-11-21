@@ -39,7 +39,7 @@ CREATE TABLE participante_programa_academico(
   id_alumno_programa INT AUTO_INCREMENT,
   ci_participante VARCHAR(8) NOT NULL,
   id_programa INT NOT NULL,
-  rol ENUM('alumno', 'docente') NOT NULL,
+  rol ENUM('alumno', 'docente', 'admin') NOT NULL,
   PRIMARY KEY (id_alumno_programa),
   FOREIGN KEY (ci_participante) REFERENCES participante(ci),
   FOREIGN KEY (id_programa) REFERENCES programa_academico(id_programa)

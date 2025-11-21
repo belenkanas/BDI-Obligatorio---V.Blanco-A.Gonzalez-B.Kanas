@@ -41,7 +41,7 @@ CREATE TABLE participante_programa_academico(
   id_alumno_programa INT AUTO_INCREMENT,
   ci_participante VARCHAR(8) NOT NULL,
   id_programa INT NOT NULL,
-  rol ENUM('alumno', 'docente') NOT NULL,
+  rol ENUM('alumno', 'docente', 'admin') NOT NULL,
   PRIMARY KEY (id_alumno_programa),
   FOREIGN KEY (ci_participante) REFERENCES participante(ci),
   FOREIGN KEY (id_programa) REFERENCES programa_academico(id_programa)
@@ -116,7 +116,8 @@ INSERT INTO login (correo, contraseña) VALUES
 ('paz.garcia@correo.ucu.edu.uy', '6734vbibgiw'),
 ('pedro.silva@correo.ucu.edu.uy', 'ucu8932ohwel'),
 ('jose.martinez@correo.ucu.edu.uy', 'hureik213'),
-('luis.sanchez@correo.ucu.edu.uy', 'fre2y89w');
+('luis.sanchez@correo.ucu.edu.uy', 'fre2y89w'),
+('admin@correo.ucu.edu.uy', 'admin123');
 
 -- PARTICIPANTE
 INSERT INTO participante (ci, nombre, apellido, email)
