@@ -6,7 +6,8 @@ from app.services.reserva_service import (
     actualizar_estado_reserva,
     cancelar_reserva,
     registrar_asistencias,
-    listar_reservas_por_participante
+    listar_reservas_por_participante,
+    cerrar_asistencias_vencidas
 )
 
 reserva_bp = Blueprint('reserva', __name__)
@@ -105,9 +106,9 @@ def cancelar_reserva_endpoint(id_reserva):
         return jsonify({"mensaje": mensaje}), 400
 
 # Obtener todas las reservas en las que participa un usuario (por CI)
-
 @reserva_bp.route('/mis_reservas/<ci>', methods=['GET'])
 def reservas_de_participante(ci):
+    cerrar_asistencias_vencidas(ci) 
+
     reservas = listar_reservas_por_participante(ci)
     return jsonify(reservas), 200
-

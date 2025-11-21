@@ -114,7 +114,9 @@ VALUES
 ((SELECT id_sala FROM sala WHERE nombre_sala='Sala Zoom'), '2025-10-28', 4, 'finalizada'),
 ((SELECT id_sala FROM sala WHERE nombre_sala='Laboratorio'), '2025-10-29', 6, 'cancelada'),
 ((SELECT id_sala FROM sala WHERE nombre_sala='Sala del silencio'), '2025-10-29', 8, 'activa'),
-((SELECT id_sala FROM sala WHERE nombre_sala='Sala de posgrados'), '2025-10-30', 10, 'sin_asistencia');
+((SELECT id_sala FROM sala WHERE nombre_sala='Sala de posgrados'), '2025-10-30', 10, 'sin_asistencia'),
+((SELECT id_sala FROM sala WHERE nombre_sala='TI3'), '2025-11-21', 1, 'sin_asistencia');
+((SELECT id_sala FROM sala WHERE nombre_sala='TI3'), '2025-11-21', 2, 'sin_asistencia');
 
 
 /*Reservas por participante*/
@@ -125,6 +127,8 @@ VALUES
 ((SELECT ci FROM participante WHERE nombre='Andrea' AND apellido='González'), 3, '2025-10-26 09:00:00', FALSE),
 ((SELECT ci FROM participante WHERE nombre='Juan' AND apellido='Pérez'), 4, '2025-10-26 10:45:00', TRUE),
 ((SELECT ci FROM participante WHERE nombre='Ana' AND apellido='López'), 5, '2025-10-27 08:00:00', FALSE);
+((SELECT ci FROM participante WHERE nombre='Andrea' AND apellido='González'), 6, '2025-11-21 08:00:00', FALSE);
+((SELECT ci FROM participante WHERE nombre='Andrea' AND apellido='González'), 7, '2025-11-21 09:00:00', FALSE);
 
 /*Sanciones*/
 INSERT INTO obligatorio.sancion_participante(ci_participante, fecha_inicio, fecha_fin)

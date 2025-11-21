@@ -216,7 +216,9 @@ INSERT INTO reserva (id_sala, fecha, id_turno, estado) VALUES
 (2, '2025-10-28', 4, 'finalizada'),
 (4, '2025-10-29', 6, 'cancelada'),
 (6, '2025-10-29', 8, 'activa'),
-(8, '2025-10-30', 10, 'sin_asistencia');
+(8, '2025-10-30', 10, 'sin_asistencia'),
+(5, '2025-11-21', 1, 'sin_asistencia'),
+(5, '2025-11-21', 2, 'sin_asistencia');
 
 -- RESERVA_PARTICIPANTE
 INSERT INTO reserva_participante (ci_participante, id_reserva, fecha_solicitud_reserva, asistencia) VALUES
@@ -224,7 +226,9 @@ INSERT INTO reserva_participante (ci_participante, id_reserva, fecha_solicitud_r
 ('55667788', 2, '2025-10-25 11:30:00', TRUE),
 ('55788998', 3, '2025-10-26 09:00:00', FALSE),
 ('55938753', 4, '2025-10-26 10:45:00', TRUE),
-('58902345', 5, '2025-10-27 08:00:00', FALSE);
+('58902345', 5, '2025-10-27 08:00:00', FALSE),
+('55788998', 6, '2025-11-21 08:00:00', FALSE),
+('55788998', 7, '2025-11-21 09:00:00', FALSE);
 
 -- SANCIONES
 INSERT INTO sancion_participante (ci_participante, fecha_inicio, fecha_fin) VALUES
@@ -232,4 +236,5 @@ INSERT INTO sancion_participante (ci_participante, fecha_inicio, fecha_fin) VALU
 ('58902345', '2025-10-30', '2025-11-06'),
 ('57876550', '2025-09-15', '2025-09-22'),
 ('57541231', '2025-10-10', '2025-10-17'),
-('53234567', '2025-10-20', '2025-10-27');
+('53234567', '2025-10-20', '2025-10-27'),
+('55788998', '2025-11-21', '2026-01-21');
