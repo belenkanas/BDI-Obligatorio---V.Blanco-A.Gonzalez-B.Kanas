@@ -176,7 +176,7 @@ A continuación se detallan todos los endpoints expuestos por la API REST, organ
 | **POST**   | `/facultades`               | Crear facultad              |
 | **DELETE** | `/facultades/<id_facultad>` | Eliminar facultad           |
 
-### 🔐 Auth / Login (_login_bp_)
+### 🔐 Login (_login_bp_)
 | Método   | URL         | Descripción       |
 | -------- | ----------- | ----------------- |
 | **POST** | `/login`    | Iniciar sesión    |
