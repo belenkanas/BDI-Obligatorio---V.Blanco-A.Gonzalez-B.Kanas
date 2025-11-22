@@ -278,6 +278,7 @@ A continuación se detallan todos los endpoints expuestos por la API REST, organ
 - Documentación formal del proyecto + Bitácora
 -  [Link a Workspace de Postman](https://mariabelenkanas.postman.co/workspace/ca3bb8cf-33a5-41fe-82f6-3788387c0468) 
 
+![Workspace Postman](image-2.png)
 
 ---
 
