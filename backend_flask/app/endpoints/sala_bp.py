@@ -35,17 +35,40 @@ def crear_sala():
 
 @sala_bp.route('/salas/<id_sala>', methods=['DELETE'])
 def eliminar_sala_endpoint(id_sala):
+    try:
+        id_sala = int(id_sala)
+    except:
+        return jsonify({
+            "eliminado": False,
+            "requiere_force": False,
+            "mensaje": "El ID de la sala debe ser numérico."
+        }), 400
+
     force = request.args.get("force", "false").lower() == "true"
-    ok, requiere_force, error = eliminar_sala(id_sala, force)
 
-    if ok:
-        return jsonify({"mensaje": "Sala eliminada con éxito"}), 200
+    eliminado, requiere_force, mensaje = eliminar_sala(id_sala, force)
 
-    if requiere_force:
-        return jsonify({"mensaje": error}), 409
+    # Caso: requiere confirmación (force=false y hay reservas)
+    if requiere_force and not force:
+        return jsonify({
+            "eliminado": False,
+            "requiere_force": True,
+            "mensaje": mensaje or "La sala tiene reservas asociadas. Debes usar force=true."
+        }), 409
 
-    return jsonify({"mensaje": error}), 400
+    # Caso: hubo error interno u operación fallida
+    if not eliminado:
+        return jsonify({
+            "eliminado": False,
+            "requiere_force": False,
+            "mensaje": mensaje or "Error al eliminar la sala."
+        }), 400
 
+    # Caso: eliminado con éxito
+    return jsonify({
+        "eliminado": True,
+        "mensaje": "Sala eliminada correctamente."
+    }), 200
 
 
 

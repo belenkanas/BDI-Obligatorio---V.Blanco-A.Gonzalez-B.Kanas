@@ -56,32 +56,33 @@ def eliminar_edificio(id_edificio, force=False):
     cursor = conn.cursor()
 
     try:
+        # Verificar si el edificio tiene salas asociadas
         cursor.execute("SELECT id_sala FROM sala WHERE id_edificio = %s", (id_edificio,))
         salas = cursor.fetchall()
 
         if salas and not force:
             return False, True, "El edificio tiene salas asociadas."
 
-        # FORZADO → eliminar reservas de cada sala
+        # FORZADO → eliminar reservas y datos asociados de cada sala
         for (id_sala,) in salas:
-            cursor.execute("""
-                DELETE a FROM asistencia a
-                JOIN reserva r ON a.id_reserva = r.id_reserva
-                WHERE r.id_sala = %s
-            """, (id_sala,))
 
+            # 1) Eliminar reserva_participante (incluye asistencia, que es un campo)
             cursor.execute("""
                 DELETE rp FROM reserva_participante rp
                 JOIN reserva r ON rp.id_reserva = r.id_reserva
                 WHERE r.id_sala = %s
             """, (id_sala,))
 
-            cursor.execute("DELETE FROM reserva WHERE id_sala = %s", (id_sala,))
+            # 2) Eliminar reservas
+            cursor.execute("""
+                DELETE FROM reserva
+                WHERE id_sala = %s
+            """, (id_sala,))
 
-        # Eliminar salas
+        # 3) Eliminar salas
         cursor.execute("DELETE FROM sala WHERE id_edificio = %s", (id_edificio,))
 
-        # Eliminar edificio
+        # 4) Eliminar edificio
         cursor.execute("DELETE FROM edificio WHERE id_edificio = %s", (id_edificio,))
 
         conn.commit()
