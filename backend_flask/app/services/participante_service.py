@@ -47,13 +47,26 @@ def eliminar_participante(ci):
     conn = conexion()
     cursor = conn.cursor()
 
-    cursor.execute("DELETE FROM participante WHERE ci = %s", (ci,))
-    
-    conn.commit()
-    filas = cursor.rowcount
-    conn.close()
+    try:
+        # 1) Borrar programas asociados
+        cursor.execute("""
+            DELETE FROM participante_programa_academico 
+            WHERE ci_participante = %s
+        """, (ci,))
 
-    return filas > 0
+        # 2) Borrar participante
+        cursor.execute("DELETE FROM participante WHERE ci = %s", (ci,))
+
+        conn.commit()
+        return (cursor.rowcount > 0), None
+
+    except Exception as e:
+        conn.rollback()
+        print("ERROR al eliminar participante:", e)
+        return False, "No se puede eliminar el participante porque tiene datos asociados."
+
+    finally:
+        conn.close()
 
 
 def obtener_participantes_permitidos(id_sala):

@@ -70,26 +70,37 @@ def eliminar_sala(id_sala):
     cursor = conn.cursor()
 
     try:
+        # 1) Borrar asistencias
+        cursor.execute("""
+            DELETE a FROM asistencia a
+            JOIN reserva r ON a.id_reserva = r.id_reserva
+            WHERE r.id_sala = %s
+        """, (id_sala,))
+
+        # 2) Borrar reservas y participantes
         cursor.execute("""
             DELETE rp FROM reserva_participante rp
             JOIN reserva r ON rp.id_reserva = r.id_reserva
             WHERE r.id_sala = %s
         """, (id_sala,))
 
+        # 3) Borrar reservas
         cursor.execute("DELETE FROM reserva WHERE id_sala = %s", (id_sala,))
 
+        # 4) Borrar sala
         cursor.execute("DELETE FROM sala WHERE id_sala = %s", (id_sala,))
 
         conn.commit()
-        return cursor.rowcount > 0
+        return True, None
 
     except Exception as e:
         conn.rollback()
         print("ERROR al borrar sala:", e)
-        return False
+        return False, "La sala no se puede eliminar porque tiene reservas o registros asociados."
 
     finally:
         conn.close()
+
 
 
 def obtener_salas_permitidas_para_usuario(ci, id_edificio):

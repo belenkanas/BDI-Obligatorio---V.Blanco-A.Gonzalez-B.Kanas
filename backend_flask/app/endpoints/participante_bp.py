@@ -35,9 +35,16 @@ def crear():
 
 @participante_bp.route('/participantes/<ci>', methods=['DELETE'])
 def eliminar(ci):
-    if eliminar_participante(ci):
+    ok, error = eliminar_participante(ci)
+
+    if not ok and error:
+        return jsonify({"error": error}), 409
+
+    if ok:
         return jsonify({"mensaje": "Participante eliminado exitosamente"}), 200
+
     return jsonify({"mensaje": "Participante no encontrado"}), 404
+
 
 
 @participante_bp.route('/participantes-permitidos', methods=['GET'])

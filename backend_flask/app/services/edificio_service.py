@@ -55,11 +55,18 @@ def eliminar_edificio(id_edificio):
     conn = conexion()
     cursor = conn.cursor()
 
-    cursor.execute("DELETE FROM edificio WHERE id_edificio = %s",
-                   (id_edificio,))
+    # Verificar si tiene salas asociadas
+    cursor.execute("SELECT COUNT(*) FROM sala WHERE id_edificio = %s", (id_edificio,))
+    (cant_salas,) = cursor.fetchone()
 
+    if cant_salas > 0:
+        conn.close()
+        return False, "No se puede eliminar el edificio porque tiene salas asociadas."
+
+    # Eliminar
+    cursor.execute("DELETE FROM edificio WHERE id_edificio = %s", (id_edificio,))
     conn.commit()
     filas = cursor.rowcount
     conn.close()
 
-    return filas > 0
+    return (filas > 0), None
