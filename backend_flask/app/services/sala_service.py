@@ -65,41 +65,47 @@ def agregar_sala(nombre_sala, id_edificio, capacidad, tipo_sala):
     }, "Sala creada exitosamente"
 
 
-def eliminar_sala(id_sala):
+def eliminar_sala(id_sala, force=False):
     conn = conexion()
     cursor = conn.cursor()
 
     try:
-        # 1) Borrar asistencias
+        # Ver si tiene reservas asociadas
+        cursor.execute("SELECT id_reserva FROM reserva WHERE id_sala = %s", (id_sala,))
+        reservas = cursor.fetchall()
+
+        if reservas and not force:
+            return False, True, "La sala tiene reservas asociadas."
+
+        # FORZADO → borrar reservas + asistencias + participantes
         cursor.execute("""
             DELETE a FROM asistencia a
             JOIN reserva r ON a.id_reserva = r.id_reserva
             WHERE r.id_sala = %s
         """, (id_sala,))
 
-        # 2) Borrar participantes reservados
         cursor.execute("""
             DELETE rp FROM reserva_participante rp
             JOIN reserva r ON rp.id_reserva = r.id_reserva
             WHERE r.id_sala = %s
         """, (id_sala,))
 
-        # 3) Borrar reservas
         cursor.execute("DELETE FROM reserva WHERE id_sala = %s", (id_sala,))
 
-        # 4) Borrar sala
+        # Borrar sala
         cursor.execute("DELETE FROM sala WHERE id_sala = %s", (id_sala,))
 
         conn.commit()
-        return True, None
+        return True, False, None
 
     except Exception as e:
         conn.rollback()
         print("ERROR al borrar sala:", e)
-        return False, "La sala no se puede eliminar porque tiene reservas o registros asociados."
+        return False, False, "Error interno al eliminar sala."
 
     finally:
         conn.close()
+
 
 
 

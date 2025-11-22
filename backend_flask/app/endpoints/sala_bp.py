@@ -35,14 +35,19 @@ def crear_sala():
 
 @sala_bp.route('/salas/<id_sala>', methods=['DELETE'])
 def eliminar_sala_endpoint(id_sala):
-    ok, error = eliminar_sala(id_sala)
+    force = request.args.get("force", "false").lower() == "true"
+    ok, requiere_force, error = eliminar_sala(id_sala, force)
 
     if ok:
         return jsonify({"mensaje": "Sala eliminada con éxito"}), 200
-    else:
-        return jsonify({"error": error}), 400
-    
-    
+
+    if requiere_force:
+        return jsonify({"mensaje": error}), 409
+
+    return jsonify({"mensaje": error}), 400
+
+
+
 
 @sala_bp.route('/salas-permitidas', methods=['GET'])
 def salas_permitidas():

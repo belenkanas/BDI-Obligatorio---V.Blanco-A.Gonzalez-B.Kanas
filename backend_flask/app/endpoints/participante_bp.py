@@ -35,12 +35,17 @@ def crear():
 
 @participante_bp.route('/participantes/<ci>', methods=['DELETE'])
 def eliminar(ci):
-    ok, error = eliminar_participante(ci)
+    force = request.args.get("force", "false").lower() == "true"
+    ok, requiere_force, error = eliminar_participante(ci, force)
 
     if ok:
         return jsonify({"mensaje": "Participante eliminado con éxito"}), 200
-    else:
-        return jsonify({"error": error}), 400
+
+    if requiere_force:
+        return jsonify({"mensaje": error}), 409  # ERROR CONTROLADO
+
+    return jsonify({"mensaje": error}), 400
+
 
 
 

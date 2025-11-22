@@ -43,18 +43,12 @@ def agregar_participante(ci, nombre, apellido, email):
     return {"ci": ci, "nombre": nombre, "apellido": apellido, "email": email}, "Participante creado exitosamente"
 
 
-def eliminar_participante(ci):
+def eliminar_participante(ci, force=False):
     conn = conexion()
     cursor = conn.cursor()
 
     try:
-        # 1) Borrar programas asociados
-        cursor.execute("""
-            DELETE FROM participante_programa_academico 
-            WHERE ci_participante = %s
-        """, (ci,))
-
-        # 2) Obtener reservas donde participa
+        # Obtener reservas en las que participa
         cursor.execute("""
             SELECT r.id_reserva
             FROM reserva r
@@ -63,8 +57,13 @@ def eliminar_participante(ci):
         """, (ci,))
         reservas = cursor.fetchall()
 
+        # Si tiene reservas y no es force → NO borrar, avisar al frontend
+        if reservas and not force:
+            return False, True, "El participante está asociado a reservas."
+
+        # FORZADO → borrar reservas completas si es el único
         for (id_reserva,) in reservas:
-            # Cantidad de participantes
+
             cursor.execute("""
                 SELECT COUNT(*) 
                 FROM reserva_participante 
@@ -78,26 +77,30 @@ def eliminar_participante(ci):
                     WHERE ci = %s AND id_reserva = %s
                 """, (ci, id_reserva))
             else:
-                # Borrar asistencias
                 cursor.execute("DELETE FROM asistencia WHERE id_reserva = %s", (id_reserva,))
-                # Borrar participantes
                 cursor.execute("DELETE FROM reserva_participante WHERE id_reserva = %s", (id_reserva,))
-                # Borrar reserva
                 cursor.execute("DELETE FROM reserva WHERE id_reserva = %s", (id_reserva,))
 
-        # 3) Borrar participante
+        # Borrar programas académicos
+        cursor.execute("""
+            DELETE FROM participante_programa_academico 
+            WHERE ci_participante = %s
+        """, (ci,))
+
+        # Finalmente borrar participante
         cursor.execute("DELETE FROM participante WHERE ci = %s", (ci,))
 
         conn.commit()
-        return True, None
+        return True, False, None
 
     except Exception as e:
         conn.rollback()
         print("ERROR al eliminar participante:", e)
-        return False, "No se puede eliminar el participante porque tiene datos asociados."
+        return False, False, "Error interno al eliminar."
 
     finally:
         conn.close()
+
 
 
 
