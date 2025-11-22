@@ -180,10 +180,5 @@ def obtener_participantes_permitidos(id_sala):
     cursor.execute(query)
     participantes = cursor.fetchall()
 
-    participantes = [
-        p for p in participantes
-        if p.get("rol") != "admin"
-    ]
-
     conn.close()
     return participantes

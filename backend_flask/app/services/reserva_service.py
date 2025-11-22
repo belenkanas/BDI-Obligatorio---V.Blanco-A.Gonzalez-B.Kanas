@@ -433,6 +433,20 @@ def listar_reservas_por_participante(ci):
     conn = conexion()
     cursor = conn.cursor(dictionary=True)
 
+    # Finalizar reservas vencidas
+    cursor.execute("""
+        UPDATE reserva r
+        JOIN turno t ON r.id_turno = t.id_turno
+        SET r.estado = 'finalizada'
+        WHERE r.estado = 'activa'
+        AND NOW() > CONCAT(r.fecha, ' ', t.hora_fin)
+    """)
+    conn.commit()
+
+    # Cerrar asistencias vencidas
+    cerrar_asistencias_vencidas(ci)
+
+    # Obtener reservas actualizadas
     cursor.execute("""
         SELECT 
             r.id_reserva,
