@@ -472,3 +472,16 @@ def cerrar_asistencias_vencidas(ci):
 
     conn.commit()
     conn.close()
+
+def borrar_reserva(id_reserva):
+    conn = conexion()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+
+    DELETE FROM reserva WHERE id_reserva=%s
+                   """
+                   , (id_reserva,))
+    
+    conn.commit()
+    conn.close()

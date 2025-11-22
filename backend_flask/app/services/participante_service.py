@@ -48,47 +48,88 @@ def eliminar_participante(ci, force=False):
     cursor = conn.cursor()
 
     try:
-        # Obtener reservas en las que participa
+        # 1) Verificar si el participante existe y obtener email
         cursor.execute("""
-            SELECT r.id_reserva
-            FROM reserva r
-            JOIN reserva_participante rp ON r.id_reserva = rp.id_reserva
-            WHERE rp.ci = %s
+            SELECT email
+            FROM participante
+            WHERE ci = %s
+        """, (ci,))
+        row = cursor.fetchone()
+        if not row:
+            return False, False, "El participante no existe."
+        
+        email = row[0]
+
+        # 2) Buscar sanciones asociadas
+        cursor.execute("""
+            SELECT id_sancion
+            FROM sancion_participante
+            WHERE ci_participante = %s
+        """, (ci,))
+        sanciones = cursor.fetchall()
+
+        # 3) Buscar reservas en las que participa
+        cursor.execute("""
+            SELECT id_reserva
+            FROM reserva_participante
+            WHERE ci_participante = %s
         """, (ci,))
         reservas = cursor.fetchall()
 
-        # Si tiene reservas y no es force → NO borrar, avisar al frontend
+        # Si tiene reservas y NO es force → no borrar
         if reservas and not force:
             return False, True, "El participante está asociado a reservas."
 
-        # FORZADO → borrar reservas completas si es el único
-        for (id_reserva,) in reservas:
+        # 4) Borrar sanciones directamente
+        cursor.execute("""
+            DELETE FROM sancion_participante
+            WHERE ci_participante = %s
+        """, (ci,))
 
+        # 5) Procesar reservas
+        for (id_reserva,) in reservas:
+            # Contar participantes de esa reserva
             cursor.execute("""
-                SELECT COUNT(*) 
-                FROM reserva_participante 
+                SELECT COUNT(*)
+                FROM reserva_participante
                 WHERE id_reserva = %s
             """, (id_reserva,))
             (cant,) = cursor.fetchone()
 
             if cant > 1:
+                # Tiene más participantes → solo lo desvinculamos
                 cursor.execute("""
                     DELETE FROM reserva_participante
-                    WHERE ci = %s AND id_reserva = %s
+                    WHERE ci_participante = %s AND id_reserva = %s
                 """, (ci, id_reserva))
             else:
-                cursor.execute("DELETE FROM asistencia WHERE id_reserva = %s", (id_reserva,))
-                cursor.execute("DELETE FROM reserva_participante WHERE id_reserva = %s", (id_reserva,))
-                cursor.execute("DELETE FROM reserva WHERE id_reserva = %s", (id_reserva,))
+                # Es el único → eliminar reserva entera
+                cursor.execute("""
+                    DELETE FROM reserva_participante
+                    WHERE id_reserva = %s
+                """, (id_reserva,))
+                cursor.execute("""
+                    DELETE FROM reserva
+                    WHERE id_reserva = %s
+                """, (id_reserva,))
 
-        # Borrar programas académicos
+        # 6) Borrar su relación con programas académicos
         cursor.execute("""
-            DELETE FROM participante_programa_academico 
+            DELETE FROM participante_programa_academico
             WHERE ci_participante = %s
         """, (ci,))
 
-        # Finalmente borrar participante
-        cursor.execute("DELETE FROM participante WHERE ci = %s", (ci,))
+        # 7) Eliminar participante
+        cursor.execute("""
+            DELETE FROM participante
+            WHERE ci = %s
+        """, (ci,))
+
+        # 8) Eliminar login vinculado
+        cursor.execute("""
+            DELETE FROM login
+            WHERE correo = %s
+        """, (email,))
 
         conn.commit()
         return True, False, None
@@ -100,8 +141,6 @@ def eliminar_participante(ci, force=False):
 
     finally:
         conn.close()
-
-
 
 
 def obtener_participantes_permitidos(id_sala):
