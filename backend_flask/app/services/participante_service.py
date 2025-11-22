@@ -48,13 +48,13 @@ def eliminar_participante(ci):
     cursor = conn.cursor()
 
     try:
-        # Borrar programas asociados
+        # 1) Borrar programas asociados
         cursor.execute("""
             DELETE FROM participante_programa_academico 
             WHERE ci_participante = %s
         """, (ci,))
 
-        # 1) Obtener reservas donde participa
+        # 2) Obtener reservas donde participa
         cursor.execute("""
             SELECT r.id_reserva
             FROM reserva r
@@ -64,8 +64,7 @@ def eliminar_participante(ci):
         reservas = cursor.fetchall()
 
         for (id_reserva,) in reservas:
-
-            # Cantidad de participantes en cada reserva
+            # Cantidad de participantes
             cursor.execute("""
                 SELECT COUNT(*) 
                 FROM reserva_participante 
@@ -74,21 +73,23 @@ def eliminar_participante(ci):
             (cant,) = cursor.fetchone()
 
             if cant > 1:
-                # Si hay más participantes → solo lo removemos
                 cursor.execute("""
                     DELETE FROM reserva_participante
                     WHERE ci = %s AND id_reserva = %s
                 """, (ci, id_reserva))
             else:
-                # Si era el único → borrar reserva completa
+                # Borrar asistencias
+                cursor.execute("DELETE FROM asistencia WHERE id_reserva = %s", (id_reserva,))
+                # Borrar participantes
                 cursor.execute("DELETE FROM reserva_participante WHERE id_reserva = %s", (id_reserva,))
+                # Borrar reserva
                 cursor.execute("DELETE FROM reserva WHERE id_reserva = %s", (id_reserva,))
 
-        # 2) Borrar participante
+        # 3) Borrar participante
         cursor.execute("DELETE FROM participante WHERE ci = %s", (ci,))
 
         conn.commit()
-        return (cursor.rowcount > 0), None
+        return True, None
 
     except Exception as e:
         conn.rollback()
@@ -97,6 +98,7 @@ def eliminar_participante(ci):
 
     finally:
         conn.close()
+
 
 
 def obtener_participantes_permitidos(id_sala):

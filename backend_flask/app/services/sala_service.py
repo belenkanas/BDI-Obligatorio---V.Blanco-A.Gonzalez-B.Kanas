@@ -77,7 +77,7 @@ def eliminar_sala(id_sala):
             WHERE r.id_sala = %s
         """, (id_sala,))
 
-        # 2) Borrar reservas y participantes
+        # 2) Borrar participantes reservados
         cursor.execute("""
             DELETE rp FROM reserva_participante rp
             JOIN reserva r ON rp.id_reserva = r.id_reserva
@@ -91,7 +91,7 @@ def eliminar_sala(id_sala):
         cursor.execute("DELETE FROM sala WHERE id_sala = %s", (id_sala,))
 
         conn.commit()
-        return cursor.rowcount > 0
+        return True, None
 
     except Exception as e:
         conn.rollback()
@@ -100,6 +100,7 @@ def eliminar_sala(id_sala):
 
     finally:
         conn.close()
+
 
 
 

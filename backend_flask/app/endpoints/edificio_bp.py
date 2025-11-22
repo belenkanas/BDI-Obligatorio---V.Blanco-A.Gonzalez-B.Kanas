@@ -38,10 +38,7 @@ def crear_edificio():
 def eliminar_edificio_endpoint(id_edificio):
     ok, error = eliminar_edificio(id_edificio)
 
-    if not ok and error:
-        return jsonify({"error": error}), 409 
-
     if ok:
-        return jsonify({"mensaje": "Edificio eliminado exitosamente"}), 200
-
-    return jsonify({"mensaje": "Edificio no encontrado"}), 404
+        return jsonify({"mensaje": "Edificio eliminado con éxito"}), 200
+    else:
+        return jsonify({"error": error}), 400

@@ -37,13 +37,10 @@ def crear():
 def eliminar(ci):
     ok, error = eliminar_participante(ci)
 
-    if not ok and error:
-        return jsonify({"error": error}), 409
-
     if ok:
-        return jsonify({"mensaje": "Participante eliminado exitosamente"}), 200
-
-    return jsonify({"mensaje": "Participante no encontrado"}), 404
+        return jsonify({"mensaje": "Participante eliminado con éxito"}), 200
+    else:
+        return jsonify({"error": error}), 400
 
 
 
