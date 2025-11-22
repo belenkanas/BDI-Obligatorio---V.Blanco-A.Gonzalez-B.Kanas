@@ -3,13 +3,15 @@ from app.database.conexion_db import conexion
 def listar_participantes():
     conn = conexion()
     cursor = conn.cursor(dictionary=True)
-    
+
     cursor.execute("SELECT * FROM participante")
-    
+
     participantes = cursor.fetchall()
     conn.close()
-    
-    return participantes
+
+    # Siempre devolver una lista
+    return participantes if participantes else []
+
 
 
 def obtener_participante(ci):

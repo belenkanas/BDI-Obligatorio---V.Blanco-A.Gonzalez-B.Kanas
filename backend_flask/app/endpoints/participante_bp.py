@@ -1,6 +1,11 @@
 from flask import Blueprint, request, jsonify
-from app.services.participante_service import (listar_participantes, obtener_participante, agregar_participante, eliminar_participante, obtener_participantes_permitidos)
-
+from app.services.participante_service import (
+    listar_participantes,
+    obtener_participante,
+    agregar_participante,
+    eliminar_participante,
+    obtener_participantes_permitidos
+)
 participante_bp = Blueprint('participante', __name__)
 
 @participante_bp.route('/participantes', methods=['GET'])
@@ -32,11 +37,6 @@ def crear():
         return jsonify({"mensaje": mensaje, "participante": participante}), 201
     return jsonify({"mensaje": mensaje}), 400
 
-
-from flask import Blueprint, request, jsonify
-from app.services.participante_service import eliminar_participante
-
-participante_bp = Blueprint("participante", __name__)
 
 @participante_bp.route("/participantes/<ci>", methods=["DELETE"])
 def eliminar_participante_endpoint(ci):
