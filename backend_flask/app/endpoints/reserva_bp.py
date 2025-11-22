@@ -7,7 +7,8 @@ from app.services.reserva_service import (
     cancelar_reserva,
     registrar_asistencias,
     listar_reservas_por_participante,
-    cerrar_asistencias_vencidas
+    cerrar_asistencias_vencidas,
+    borrar_reserva
 )
 
 reserva_bp = Blueprint('reserva', __name__)
@@ -112,3 +113,11 @@ def reservas_de_participante(ci):
 
     reservas = listar_reservas_por_participante(ci)
     return jsonify(reservas), 200
+
+@reserva_bp.route('/reservas/<int:id_reserva>', methods=['DELETE'])
+def borrar_reserva_endpoint(id_reserva):
+    resultado, mensaje = borrar_reserva(id_reserva)
+    if resultado:
+        return jsonify({"resultado": resultado, "mensaje": mensaje}), 200
+    else:
+        return jsonify({"mensaje": mensaje}), 400
