@@ -91,7 +91,7 @@ def eliminar_sala(id_sala):
         cursor.execute("DELETE FROM sala WHERE id_sala = %s", (id_sala,))
 
         conn.commit()
-        return True, None
+        return cursor.rowcount > 0
 
     except Exception as e:
         conn.rollback()

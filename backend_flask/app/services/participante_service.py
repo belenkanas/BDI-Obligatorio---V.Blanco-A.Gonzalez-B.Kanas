@@ -48,11 +48,41 @@ def eliminar_participante(ci):
     cursor = conn.cursor()
 
     try:
-        # 1) Borrar programas asociados
+        # Borrar programas asociados
         cursor.execute("""
             DELETE FROM participante_programa_academico 
             WHERE ci_participante = %s
         """, (ci,))
+
+        # 1) Obtener reservas donde participa
+        cursor.execute("""
+            SELECT r.id_reserva
+            FROM reserva r
+            JOIN reserva_participante rp ON r.id_reserva = rp.id_reserva
+            WHERE rp.ci = %s
+        """, (ci,))
+        reservas = cursor.fetchall()
+
+        for (id_reserva,) in reservas:
+
+            # Cantidad de participantes en cada reserva
+            cursor.execute("""
+                SELECT COUNT(*) 
+                FROM reserva_participante 
+                WHERE id_reserva = %s
+            """, (id_reserva,))
+            (cant,) = cursor.fetchone()
+
+            if cant > 1:
+                # Si hay más participantes → solo lo removemos
+                cursor.execute("""
+                    DELETE FROM reserva_participante
+                    WHERE ci = %s AND id_reserva = %s
+                """, (ci, id_reserva))
+            else:
+                # Si era el único → borrar reserva completa
+                cursor.execute("DELETE FROM reserva_participante WHERE id_reserva = %s", (id_reserva,))
+                cursor.execute("DELETE FROM reserva WHERE id_reserva = %s", (id_reserva,))
 
         # 2) Borrar participante
         cursor.execute("DELETE FROM participante WHERE ci = %s", (ci,))
