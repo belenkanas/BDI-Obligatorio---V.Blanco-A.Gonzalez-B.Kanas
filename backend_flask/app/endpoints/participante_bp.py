@@ -1,6 +1,11 @@
 from flask import Blueprint, request, jsonify
-from app.services.participante_service import (listar_participantes, obtener_participante, agregar_participante, eliminar_participante, obtener_participantes_permitidos)
-
+from app.services.participante_service import (
+    listar_participantes,
+    obtener_participante,
+    agregar_participante,
+    eliminar_participante,
+    obtener_participantes_permitidos
+)
 participante_bp = Blueprint('participante', __name__)
 
 @participante_bp.route('/participantes', methods=['GET'])
@@ -33,11 +38,36 @@ def crear():
     return jsonify({"mensaje": mensaje}), 400
 
 
-@participante_bp.route('/participantes/<ci>', methods=['DELETE'])
-def eliminar(ci):
-    if eliminar_participante(ci):
-        return jsonify({"mensaje": "Participante eliminado exitosamente"}), 200
-    return jsonify({"mensaje": "Participante no encontrado"}), 404
+@participante_bp.route("/participantes/<ci>", methods=["DELETE"])
+def eliminar_participante_endpoint(ci):
+
+    # Leer parámetro force del query string (?force=true)
+    force_param = request.args.get("force", "false").lower()
+    force = force_param == "true"
+
+    eliminado, requiere_force, mensaje = eliminar_participante(ci, force)
+
+    # Caso: debe forzar pero no se pasó force=true
+    if requiere_force and not force:
+        return jsonify({
+            "eliminado": False,
+            "requiere_force": True,
+            "mensaje": "El participante tiene reservas activas. Confirma si deseas borrar forzadamente."
+        }), 409  # 409 Conflict
+
+    # Caso: error interno u otra condición
+    if not eliminado:
+        return jsonify({
+            "eliminado": False,
+            "requiere_force": False,
+            "mensaje": mensaje or "Error eliminando participante."
+        }), 400
+
+    # Caso: eliminado con éxito
+    return jsonify({
+        "eliminado": True,
+        "mensaje": "Participante eliminado correctamente."
+    }), 200
 
 
 @participante_bp.route('/participantes-permitidos', methods=['GET'])

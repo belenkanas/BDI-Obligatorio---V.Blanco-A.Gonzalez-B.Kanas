@@ -36,6 +36,13 @@ def crear_edificio():
 
 @edificio_bp.route('/edificios/<id_edificio>', methods=['DELETE'])
 def eliminar_edificio_endpoint(id_edificio):
-    if eliminar_edificio(id_edificio):
-        return jsonify({"mensaje": "Edificio eliminado exitosamente"}), 200
-    return jsonify({"mensaje": "Edificio no encontrado"}), 404
+    force = request.args.get("force", "false").lower() == "true"
+    ok, requiere_force, error = eliminar_edificio(id_edificio, force)
+
+    if ok:
+        return jsonify({"mensaje": "Edificio eliminado con éxito"}), 200
+
+    if requiere_force:
+        return jsonify({"mensaje": error}), 409
+
+    return jsonify({"mensaje": error}), 400

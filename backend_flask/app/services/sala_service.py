@@ -65,32 +65,56 @@ def agregar_sala(nombre_sala, id_edificio, capacidad, tipo_sala):
     }, "Sala creada exitosamente"
 
 
-def eliminar_sala(id_sala):
+def eliminar_sala(id_sala, force=False):
     conn = conexion()
     cursor = conn.cursor()
 
     try:
-        cursor.execute("""
-            DELETE rp FROM reserva_participante rp
-            JOIN reserva r ON rp.id_reserva = r.id_reserva
-            WHERE r.id_sala = %s
-        """, (id_sala,))
+        # 1) Buscar reservas asociadas a esa sala
+        cursor.execute("SELECT id_reserva FROM reserva WHERE id_sala = %s", (id_sala,))
+        reservas = cursor.fetchall()  # Lista de tuplas [(9,), (10,), ...]
 
-        cursor.execute("DELETE FROM reserva WHERE id_sala = %s", (id_sala,))
+        # Si tiene reservas y no es eliminación forzada → avisar al frontend
+        if reservas and not force:
+            return False, True, "La sala tiene reservas asociadas."
 
+        # 2) Si es forzado → eliminar reservas y sus relaciones
+        for (id_reserva,) in reservas:
+
+            # Ver si la reserva tiene participantes
+            cursor.execute("""
+                SELECT COUNT(*) 
+                FROM reserva_participante 
+                WHERE id_reserva = %s
+            """, (id_reserva,))
+            (cant_participantes,) = cursor.fetchone()
+
+            # Si tiene participantes → eliminarlos primero
+            if cant_participantes > 0:
+                cursor.execute("""
+                    DELETE FROM reserva_participante
+                    WHERE id_reserva = %s
+                """, (id_reserva,))
+
+            # Ahora sí borrar la reserva
+            cursor.execute("""
+                DELETE FROM reserva
+                WHERE id_reserva = %s
+            """, (id_reserva,))
+
+        # 3) Borrar la sala finalmente
         cursor.execute("DELETE FROM sala WHERE id_sala = %s", (id_sala,))
 
         conn.commit()
-        return cursor.rowcount > 0
+        return True, False, None
 
     except Exception as e:
         conn.rollback()
-        print("ERROR al borrar sala:", e)
-        return False
+        print("ERROR al eliminar sala:", e)
+        return False, False, "Error interno al eliminar sala."
 
     finally:
         conn.close()
-
 
 def obtener_salas_permitidas_para_usuario(ci, id_edificio):
     conn = conexion()

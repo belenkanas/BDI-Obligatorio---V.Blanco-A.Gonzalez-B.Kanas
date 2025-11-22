@@ -51,15 +51,47 @@ def agregar_edificio(nombre_edificio, direccion, departamento):
     }, "Edificio creado exitosamente"
 
 
-def eliminar_edificio(id_edificio):
+def eliminar_edificio(id_edificio, force=False):
     conn = conexion()
     cursor = conn.cursor()
 
-    cursor.execute("DELETE FROM edificio WHERE id_edificio = %s",
-                   (id_edificio,))
+    try:
+        # Verificar si el edificio tiene salas asociadas
+        cursor.execute("SELECT id_sala FROM sala WHERE id_edificio = %s", (id_edificio,))
+        salas = cursor.fetchall()
 
-    conn.commit()
-    filas = cursor.rowcount
-    conn.close()
+        if salas and not force:
+            return False, True, "El edificio tiene salas asociadas."
 
-    return filas > 0
+        # FORZADO → eliminar reservas y datos asociados de cada sala
+        for (id_sala,) in salas:
+
+            # 1) Eliminar reserva_participante (incluye asistencia, que es un campo)
+            cursor.execute("""
+                DELETE rp FROM reserva_participante rp
+                JOIN reserva r ON rp.id_reserva = r.id_reserva
+                WHERE r.id_sala = %s
+            """, (id_sala,))
+
+            # 2) Eliminar reservas
+            cursor.execute("""
+                DELETE FROM reserva
+                WHERE id_sala = %s
+            """, (id_sala,))
+
+        # 3) Eliminar salas
+        cursor.execute("DELETE FROM sala WHERE id_edificio = %s", (id_edificio,))
+
+        # 4) Eliminar edificio
+        cursor.execute("DELETE FROM edificio WHERE id_edificio = %s", (id_edificio,))
+
+        conn.commit()
+        return True, False, None
+
+    except Exception as e:
+        conn.rollback()
+        print("ERROR eliminando edificio:", e)
+        return False, False, "Error interno al eliminar edificio."
+
+    finally:
+        conn.close()
