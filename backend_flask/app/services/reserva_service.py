@@ -477,11 +477,25 @@ def borrar_reserva(id_reserva):
     conn = conexion()
     cursor = conn.cursor()
 
+    # Ver si la reserva tiene participantes
     cursor.execute("""
+        SELECT COUNT(*) 
+        FROM reserva_participante 
+        WHERE id_reserva = %s
+    """, (id_reserva,))
+    (cant_participantes,) = cursor.fetchone()
 
-    DELETE FROM reserva WHERE id_reserva=%s
-                   """
-                   , (id_reserva,))
-    
+    # Si tiene participantes → eliminarlos primero
+    if cant_participantes > 0:
+        cursor.execute("""
+            DELETE FROM reserva_participante
+            WHERE id_reserva = %s
+        """, (id_reserva,))
+
+    # Ahora sí borrar la reserva
+    cursor.execute("""
+        DELETE FROM reserva
+        WHERE id_reserva = %s
+    """, (id_reserva,))
     conn.commit()
     conn.close()
