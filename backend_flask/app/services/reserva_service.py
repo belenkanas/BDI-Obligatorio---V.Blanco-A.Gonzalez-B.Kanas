@@ -491,25 +491,44 @@ def borrar_reserva(id_reserva):
     conn = conexion()
     cursor = conn.cursor()
 
-    # Ver si la reserva tiene participantes
-    cursor.execute("""
-        SELECT COUNT(*) 
-        FROM reserva_participante 
-        WHERE id_reserva = %s
-    """, (id_reserva,))
-    (cant_participantes,) = cursor.fetchone()
-
-    # Si tiene participantes → eliminarlos primero
-    if cant_participantes > 0:
+    try:
+        # Ver si la reserva existe
         cursor.execute("""
-            DELETE FROM reserva_participante
+            SELECT COUNT(*) FROM reserva WHERE id_reserva = %s
+        """, (id_reserva,))
+        (existe,) = cursor.fetchone()
+
+        if existe == 0:
+            conn.close()
+            return False, "La reserva no existe."
+
+        # Ver si tiene participantes
+        cursor.execute("""
+            SELECT COUNT(*) 
+            FROM reserva_participante 
+            WHERE id_reserva = %s
+        """, (id_reserva,))
+        (cant_participantes,) = cursor.fetchone()
+
+        # Si tiene participantes → eliminarlos
+        if cant_participantes > 0:
+            cursor.execute("""
+                DELETE FROM reserva_participante
+                WHERE id_reserva = %s
+            """, (id_reserva,))
+
+        # Borrar la reserva
+        cursor.execute("""
+            DELETE FROM reserva
             WHERE id_reserva = %s
         """, (id_reserva,))
 
-    # Ahora sí borrar la reserva
-    cursor.execute("""
-        DELETE FROM reserva
-        WHERE id_reserva = %s
-    """, (id_reserva,))
-    conn.commit()
-    conn.close()
+        conn.commit()
+        conn.close()
+
+        return True, "Reserva eliminada correctamente."
+
+    except Exception as e:
+        conn.rollback()
+        conn.close()
+        return False, f"Error al eliminar la reserva: {str(e)}"
