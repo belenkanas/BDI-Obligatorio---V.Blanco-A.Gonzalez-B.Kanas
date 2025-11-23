@@ -49,11 +49,28 @@ def agregar_facultad(nombre):
 def eliminar_facultad(id_facultad):
     conn = conexion()
     cursor = conn.cursor()
+    try:
+        #Busco si hay programas académicos asociados
+        cursor.execute("select id_programa from programa_academico where id_facultad = %s", (id_facultad,))
+        id_programa = cursor.fetchone()
+        if cursor.fetchone() is None:
+            conn.close()
+            return False  
+        #Borro las relaciones entre participantes y programas academicos
+        cursor.execute("DELETE FROM participante_programa_academico WHERE id_programa = %s", (id_programa,))
 
-    cursor.execute("DELETE FROM facultad WHERE id_facultad = %s", (id_facultad,))
+        #Borro los programas academicos de dicha facultad
+        cursor.execute("DELETE FROM programa_academico WHERE id_programa = %s", (id_programa,))
+        
+        #Finalmente borrar facultad
+        cursor.execute("DELETE FROM facultad WHERE id_facultad = %s", (id_facultad,))
+        conn.commit()
+        return True
 
-    conn.commit()
-    filas = cursor.rowcount
-    conn.close()
+    except Exception as e:
+        conn.rollback()
+        print("ERROR al borrar facultad:", e)
+        return False
 
-    return filas > 0
+    finally:
+        conn.close()
