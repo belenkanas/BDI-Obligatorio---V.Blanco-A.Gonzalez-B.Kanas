@@ -49,21 +49,41 @@ def agregar_facultad(nombre):
 def eliminar_facultad(id_facultad):
     conn = conexion()
     cursor = conn.cursor()
-    try:
-        #Busco si hay programas académicos asociados
-        cursor.execute("select id_programa from programa_academico where id_facultad = %s", (id_facultad,))
-        id_programa = cursor.fetchone()
-        if cursor.fetchone() is None:
-            conn.close()
-            return False  
-        #Borro las relaciones entre participantes y programas academicos
-        cursor.execute("DELETE FROM participante_programa_academico WHERE id_programa = %s", (id_programa,))
 
-        #Borro los programas academicos de dicha facultad
-        cursor.execute("DELETE FROM programa_academico WHERE id_programa = %s", (id_programa,))
+    try:
+        # 1) Buscar TODOS los programas académicos asociados a la facultad
+        cursor.execute("""
+            SELECT id_programa 
+            FROM programa_academico 
+            WHERE id_facultad = %s
+        """, (id_facultad,))
         
-        #Finalmente borrar facultad
+        programas = cursor.fetchall()  
+        
+        # Si no hay programas, simplemente se borra la facultad
+        if not programas:
+            cursor.execute("DELETE FROM facultad WHERE id_facultad = %s", (id_facultad,))
+            conn.commit()
+            return True
+        
+        # Convertir los resultados en números
+        ids_programas = [p[0] for p in programas]
+
+        # 2) Borrar relaciones participante-programa
+        cursor.executemany("""
+            DELETE FROM participante_programa_academico 
+            WHERE id_programa = %s
+        """, [(pid,) for pid in ids_programas])
+
+        # 3) Borrar los programas académicos
+        cursor.executemany("""
+            DELETE FROM programa_academico
+            WHERE id_programa = %s
+        """, [(pid,) for pid in ids_programas])
+
+        # 4) Borrar la facultad
         cursor.execute("DELETE FROM facultad WHERE id_facultad = %s", (id_facultad,))
+
         conn.commit()
         return True
 
