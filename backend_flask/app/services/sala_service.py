@@ -74,11 +74,11 @@ def eliminar_sala(id_sala, force=False):
         cursor.execute("SELECT id_reserva FROM reserva WHERE id_sala = %s", (id_sala,))
         reservas = cursor.fetchall()  # Lista de tuplas [(9,), (10,), ...]
 
-        # Si tiene reservas y no es eliminación forzada → avisar al frontend
+        # Si tiene reservas y no es eliminación forzada --> avisar al frontend
         if reservas and not force:
             return False, True, "La sala tiene reservas asociadas."
 
-        # 2) Si es forzado → eliminar reservas y sus relaciones
+        # 2) Si es forzado --> eliminar reservas y sus relaciones
         for (id_reserva,) in reservas:
 
             # Ver si la reserva tiene participantes

@@ -63,10 +63,10 @@ def eliminar_edificio(id_edificio, force=False):
         if salas and not force:
             return False, True, "El edificio tiene salas asociadas."
 
-        # FORZADO → eliminar reservas y datos asociados de cada sala
+        # FORZADO --> eliminar reservas y datos asociados de cada sala
         for (id_sala,) in salas:
 
-            # 1) Eliminar reserva_participante (incluye asistencia, que es un campo)
+            # 1) Eliminar reserva_participante
             cursor.execute("""
                 DELETE rp FROM reserva_participante rp
                 JOIN reserva r ON rp.id_reserva = r.id_reserva

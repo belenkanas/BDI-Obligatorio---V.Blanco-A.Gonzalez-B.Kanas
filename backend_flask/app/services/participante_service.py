@@ -78,7 +78,7 @@ def eliminar_participante(ci, force=False):
         """, (ci,))
         reservas = cursor.fetchall()
 
-        # Si tiene reservas y NO es force → no borrar
+        # Si tiene reservas y NO es force --> no borrar
         if reservas and not force:
             return False, True, "El participante está asociado a reservas."
 
@@ -99,13 +99,13 @@ def eliminar_participante(ci, force=False):
             (cant,) = cursor.fetchone()
 
             if cant > 1:
-                # Tiene más participantes → solo lo desvinculamos
+                # Tiene más participantes --> solo lo desvinculamos
                 cursor.execute("""
                     DELETE FROM reserva_participante
                     WHERE ci_participante = %s AND id_reserva = %s
                 """, (ci, id_reserva))
             else:
-                # Es el único → eliminar reserva entera
+                # Es el único --> eliminar reserva entera
                 cursor.execute("""
                     DELETE FROM reserva_participante
                     WHERE id_reserva = %s

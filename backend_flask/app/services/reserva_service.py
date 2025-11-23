@@ -510,7 +510,7 @@ def borrar_reserva(id_reserva):
         """, (id_reserva,))
         (cant_participantes,) = cursor.fetchone()
 
-        # Si tiene participantes → eliminarlos
+        # Si tiene participantes --> eliminarlos
         if cant_participantes > 0:
             cursor.execute("""
                 DELETE FROM reserva_participante
