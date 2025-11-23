@@ -511,5 +511,12 @@ def borrar_reserva(id_reserva):
         DELETE FROM reserva
         WHERE id_reserva = %s
     """, (id_reserva,))
+
+    filas_afectadas = cursor.rowcount
+    
     conn.commit()
     conn.close()
+
+    if filas_afectadas == 0:
+        return False, "La reserva no existe"
+    return True, "Reserva eliminada correctamente"
