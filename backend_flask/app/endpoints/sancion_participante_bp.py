@@ -28,11 +28,6 @@ def obtener_sanciones_por_rol_y_tipo():
     resultados = sanciones_por_rol_y_tipo()
     return jsonify(resultados), 200
 
-#Participantes que más cancelan
-@sanciones_bp.route('/sanciones/participantes-canceladores', methods=['GET'])
-def obtener_participantes_que_mas_cancelan():
-    resultados = participantes_que_mas_cancelan()
-    return jsonify(resultados), 200
 
 #Crear sanción manualmente
 @sanciones_bp.route('/sanciones', methods=['POST'])

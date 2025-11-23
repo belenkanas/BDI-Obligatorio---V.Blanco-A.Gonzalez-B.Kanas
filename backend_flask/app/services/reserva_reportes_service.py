@@ -141,3 +141,81 @@ def cantidad_sanciones():
     datos = cursor.fetchall()
     conn.close()
     return datos
+
+def porcentajes_tipos_reservas():
+    conn = conexion()
+    cursor= conn.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT ((SELECT COUNT(*)
+         FROM reserva r
+         WHERE r.estado = 'activa' OR r.estado = 'finalizada') / (SELECT COUNT(*) FROM reserva) * 100) AS porcentaje_utilizadas,
+        ((SELECT COUNT(*)
+          FROM reserva r
+          WHERE r.estado = 'cancelada' OR r.estado = 'sin_asistencia') / (SELECT COUNT(*) FROM reserva) * 100) AS porcentaje_canceladas;
+
+                   """
+                   )
+    
+    datos = cursor.fetchall()
+    conn.close()
+    return datos
+
+#Consultas agregadas
+def salas_sin_reservas():
+    conn = conexion()
+    cursor= conn.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT s.nombre_sala, e.nombre_edificio
+        FROM obligatorio.sala s
+        JOIN obligatorio.edificio e ON s.id_edificio = e.id_edificio
+        LEFT JOIN obligatorio.reserva r ON r.id_sala= s.id_sala
+        WHERE r.id_reserva IS NULL
+        ORDER BY e.nombre_edificio, s.nombre_sala;
+                   """
+                   )
+    
+    datos = cursor.fetchall()
+    conn.close()
+    return datos
+
+def participantes_que_mas_cancelan():
+    conn = conexion()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT rp.ci_participante,
+               COUNT(*) AS reservas_totales,
+               SUM(r.estado IN ('cancelada','sin asistencia')) AS no_efectivas,
+               ROUND(100 * SUM(r.estado IN ('cancelada','sin asistencia')) / COUNT(*), 1) AS porcentaje_cancelacion
+        FROM reserva r
+        JOIN reserva_participante rp ON rp.id_reserva = r.id_reserva
+        GROUP BY rp.ci_participante
+        HAVING COUNT(*) >= 3
+        ORDER BY porcentaje_cancelacion DESC, reservas_totales DESC
+    """)
+
+    resultados = cursor.fetchall()
+    conn.close()
+    return resultados
+
+def programas_que_mas_usan_los_edificios():
+    conn = conexion()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT pa.nombre_programa, COUNT(DISTINCT e.id_edificio) AS edificios_usados
+        FROM reserva r
+        JOIN sala s ON r.id_sala = s.id_sala
+        JOIN edificio e ON s.id_edificio = e.id_edificio
+        JOIN reserva_participante rp ON rp.id_reserva = r.id_reserva
+        JOIN participante_programa_academico ppa ON ppa.ci_participante = rp.ci_participante
+        JOIN programa_academico pa ON pa.id_programa = ppa.id_programa
+        GROUP BY pa.nombre_programa
+        ORDER BY edificios_usados DESC, pa.nombre_programa;
+    """)
+
+    resultados = cursor.fetchall()
+    conn.close()
+    return resultados

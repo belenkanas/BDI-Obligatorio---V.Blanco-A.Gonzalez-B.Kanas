@@ -60,25 +60,6 @@ def obtener_sanciones_participante(ci_participante):
     conn.close()
     return sanciones
 
-def participantes_que_mas_cancelan():
-    conn = conexion()
-    cursor = conn.cursor(dictionary=True)
-
-    cursor.execute("""
-        SELECT rp.ci_participante,
-               COUNT(*) AS reservas_totales,
-               SUM(r.estado IN ('cancelada','sin asistencia')) AS no_efectivas,
-               ROUND(100 * SUM(r.estado IN ('cancelada','sin asistencia')) / COUNT(*), 1) AS porcentaje_cancelacion
-        FROM reserva r
-        JOIN reserva_participante rp ON rp.id_reserva = r.id_reserva
-        GROUP BY rp.ci_participante
-        HAVING COUNT(*) >= 3
-        ORDER BY porcentaje_cancelacion DESC, reservas_totales DESC
-    """)
-
-    resultados = cursor.fetchall()
-    conn.close()
-    return resultados
 
 def crear_sancion(ci_participante, fecha_inicio=None, fecha_fin=None):
     conn = conexion()

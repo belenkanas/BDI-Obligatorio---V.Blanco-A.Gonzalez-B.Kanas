@@ -1,13 +1,5 @@
 from flask import Blueprint, jsonify
-from app.services.reserva_reportes_service import (
-    salas_mas_reservadas,
-    turnos_mas_demandados,
-    promedio_participantes_por_sala,
-    reservas_por_carrera,
-    ocupacion_por_edificio,
-    actividad_participantes,
-    cantidad_sanciones
-)
+from app.services.reserva_reportes_service import *
 
 reserva_reportes_bp = Blueprint('reserva_reportes', __name__)
 
@@ -38,3 +30,25 @@ def endpoint_actividad_personas():
 @reserva_reportes_bp.route('/reservas/reportes/sanciones', methods=['GET'])
 def endpoint_sanciones():
     return jsonify(cantidad_sanciones()), 200
+
+#Participantes que más cancelan
+@reserva_reportes_bp.route('/reservas/reportes/participantes-canceladores', methods=['GET'])
+def obtener_participantes_que_mas_cancelan():
+    resultados = participantes_que_mas_cancelan()
+    return jsonify(resultados), 200
+
+#Salas sin reservas
+@reserva_reportes_bp.route('/reservas/reportes/salas-sin-reservas', methods=['GET'])
+def endpoint_salas_sin_reservas():
+    return jsonify(salas_sin_reservas()), 200
+
+#Programas que mas usan los edificios
+@reserva_reportes_bp.route('/reservas/reportes/programas-edificios', methods=['GET'])
+def endpoint_programas_edificios():
+    return jsonify(programas_que_mas_usan_los_edificios()), 200
+
+#Porcentajes por tipo de reservas (canceladas, activas, finalizadas)
+@reserva_reportes_bp.route('/reservas/reportes/porcentaje-reservas', methods=['GET'])
+def endpoint_porcentajes_reservas():
+    return jsonify(porcentajes_tipos_reservas()), 200
+
