@@ -238,6 +238,10 @@ A continuación se detallan todos los endpoints expuestos por la API REST, organ
 | **GET**  | `/reservas/reportes/ocupacion-edificio`               | Porcentaje de ocupación de salas por edificio    |
 | **GET**  | `/reservas/reportes/actividad-personas`    | Cantidad de reservas y asistencias de profesores y alumnos (grado y posgrado)                |
 | **GET**  | `/reservas/reportes/sanciones`    | Cantidad de sanciones para profesores y alumnos (grado y posgrado)                |
+| **GET**  | `/reservas/reportes/participantes-canceladores`    | Cantidad de personas que más cancelan reservas               |
+| **GET**  | `/reservas/reportes/salas-sin-reservas`    | Devuelve un listado de las salas en las que no se realizaron reservas              |
+| **GET**  | `/reservas/reportes/programas-edificios`    | Devuelve un listado de los programas y la cantidad de edificios que utilizan              |
+| **GET**  | `/reservas/reportes/porcentaje-reservas`    | Devuelve un porcentaje de las cantidades de reservas canceladas vs las reservas utilizadas efectivamente            |
 
 ### 🏫 Salas (_sala_bp_)
 | Método     | URL                    | Descripción   |
@@ -255,7 +259,6 @@ A continuación se detallan todos los endpoints expuestos por la API REST, organ
 | **GET**  | `/sanciones/activas`                    | Listar sanciones activas                  |
 | **GET**  | `/sanciones/<ci>`                       | Sanciones de un participante              |
 | **GET**  | `/sanciones/por-rol-tipo`               | Estadísticas por rol y tipo de sala       |
-| **GET**  | `/sanciones/participantes-canceladores` | Participantes con más cancelaciones       |
 | **POST** | `/sanciones`                            | Crear sanción manual                      |
 | **POST** | `/sanciones/automatica/<id_reserva>`    | Crear sanción automática por inasistencia |
 
