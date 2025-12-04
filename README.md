@@ -122,7 +122,7 @@ backend_flask/
 
 ---
 ## Variables de Entorno (.env)
-El archivo `.env` debe contener los datos de conexión a MySQL:
+El archivo `.env` debe contener los datos de conexión a MySQL y Flask:
 
 ```
 # Credenciales de base de datos
@@ -130,6 +130,14 @@ MYSQL_ROOT_PASSWORD=rootpassword
 MYSQL_DATABASE=obligatorio
 MYSQL_USER=admin
 MYSQL_PASSWORD=admin123
+
+# Config Flask
+FLASK_ENV=development
+DB_HOST=db
+DB_PORT=3306
+DB_USER=admin
+DB_PASSWORD=admin123
+DB_NAME=obligatorio
 ```
 ---
 
